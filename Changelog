@@ -1,3 +1,5 @@
+- Update depth estimation script with a version that can tolerate
+mito listed first in the BAM
 v1.0.0 20121206
 - First version of simplified starling standalone workflow to demo
 gVCF computation from BAM.
