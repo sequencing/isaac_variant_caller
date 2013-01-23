@@ -99,10 +99,8 @@ while(<$FP1>) {
 
 close($FP1);
 
-
-my $example_chrom = $chroms[0];
-my $cmd2="$samtoolsBin view -F 4 -s 0.1 $bamfile $example_chrom";
-open(my $FP2,"$cmd2 |");
+my $cmd2="$samtoolsBin view -F 4 -s 0.1 $bamfile";
+my $sid=open(my $FP2,"$cmd2 |");
 
 my $length = 0;
 my $count = 0;
@@ -113,7 +111,9 @@ while(<$FP2>) {
     $count++;
     last if($count >= 200000);
 }
+kill('INT',$sid);
 close($FP2);
+
 
 if($count <= 100000) {
     die("Unexpected read length approximation results");
@@ -127,6 +127,7 @@ for my $c (@chroms) {
     my $depth = $chrom{$c}->[1]*$avg_length / $chrom{$c}->[0];
     printf "%s\t%.3f\t%s\t%.3f\n",$c,$depth,$count,$avg_length;
 }
+
 
 1;
 
