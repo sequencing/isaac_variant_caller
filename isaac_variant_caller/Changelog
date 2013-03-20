@@ -1,3 +1,6 @@
+v2.0.3
+fix gVCF output so that GT does not contain allele numbers which are
+not in the ALT tag
 v2.0.2
 - Add haplotype score option to command-line
 v2.0.1
