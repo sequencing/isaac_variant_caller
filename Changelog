@@ -1,3 +1,7 @@
+v1.0.1 20130402
+- Change to configure-based install path specification
+- Update starling to v2.0.4
+- Update depth estimate script with better small BAM handling
 - Update depth estimation script with a version that can tolerate
 mito listed first in the BAM
 v1.0.0 20121206

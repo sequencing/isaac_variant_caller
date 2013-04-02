@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -61,7 +61,7 @@ add_gvcf_filters(const gvcf_options& opt,
         oss << "The fraction of basecalls filtered out at a site is greater than " << opt.max_base_filt;
         write_vcf_filter(os,get_label(HighBaseFilt),oss.str().c_str());
     }
-  
+
     if(opt.is_max_snv_sb) {
         std::ostringstream oss;
         oss << "SNV strand bias value (SNVSB) exceeds " << opt.max_snv_sb;
@@ -69,7 +69,7 @@ add_gvcf_filters(const gvcf_options& opt,
     }
     if(opt.is_max_snv_hpol) {
         std::ostringstream oss;
-        oss << "SNV contextual homopolymer length (SNVHPOL) exceeds " <<opt.max_snv_hpol;
+        oss << "SNV contextual homopolymer length (SNVHPOL) exceeds " << opt.max_snv_hpol;
         write_vcf_filter(os,get_label(HighSNVHPOL),oss.str().c_str());
     }
 
@@ -89,7 +89,7 @@ add_gvcf_filters(const gvcf_options& opt,
         os << std::fixed << std::setprecision(2);
 
         cdmap_t::const_iterator i(chrom_depth.begin()), i_end(chrom_depth.end());
-        for(;i!=i_end;++i) {
+        for(; i!=i_end; ++i) {
             const std::string& chrom(i->first);
             const double max_depth(opt.max_depth_factor*i->second);
             os << "##MaxDepth_" << chrom << '=' << max_depth << "\n";

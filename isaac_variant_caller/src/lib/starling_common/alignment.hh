@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -32,7 +32,7 @@
 //
 struct alignment {
 
-    alignment() 
+    alignment()
         : pos(0),
           is_fwd_strand(true) {}
 
@@ -70,8 +70,8 @@ struct alignment {
                 const unsigned ps(path.size());
                 const unsigned rps(rhs.path.size());
                 if(ps<rps) return true;
-                if(ps==rps){
-                    for(unsigned i(0);i<ps;++i){
+                if(ps==rps) {
+                    for(unsigned i(0); i<ps; ++i) {
                         if(path[i]<rhs.path[i]) return true;
                         if(path[i]==rhs.path[i]) continue;
                         return false;

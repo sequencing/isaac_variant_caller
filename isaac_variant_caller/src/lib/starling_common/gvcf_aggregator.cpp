@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -42,31 +42,31 @@ set_site_filters(const gvcf_options& opt,
                  const gvcf_deriv_options& dopt,
                  site_info& si) {
 
-   if(opt.is_min_gqx) {
+    if(opt.is_min_gqx) {
         if(si.smod.gqx<opt.min_gqx) si.smod.set_filter(VCF_FILTERS::LowGQX);
     }
 
-   if(dopt.is_max_depth) {
-       if((si.n_used_calls+si.n_unused_calls) > dopt.max_depth) si.smod.set_filter(VCF_FILTERS::HighDepth);
-   }
+    if(dopt.is_max_depth) {
+        if((si.n_used_calls+si.n_unused_calls) > dopt.max_depth) si.smod.set_filter(VCF_FILTERS::HighDepth);
+    }
 
-   if(opt.is_max_base_filt) {
-       const unsigned total_calls(si.n_used_calls+si.n_unused_calls);
-       if(total_calls>0) {
-           const double filt(static_cast<double>(si.n_unused_calls)/static_cast<double>(total_calls));
-           if(filt>opt.max_base_filt) si.smod.set_filter(VCF_FILTERS::HighBaseFilt);
-       }
-   }
+    if(opt.is_max_base_filt) {
+        const unsigned total_calls(si.n_used_calls+si.n_unused_calls);
+        if(total_calls>0) {
+            const double filt(static_cast<double>(si.n_unused_calls)/static_cast<double>(total_calls));
+            if(filt>opt.max_base_filt) si.smod.set_filter(VCF_FILTERS::HighBaseFilt);
+        }
+    }
 
-   if(si.dgt.is_snp) {
-       if(opt.is_max_snv_sb) {
-           if(si.dgt.sb>opt.max_snv_sb) si.smod.set_filter(VCF_FILTERS::HighSNVSB);
-       }
+    if(si.dgt.is_snp) {
+        if(opt.is_max_snv_sb) {
+            if(si.dgt.sb>opt.max_snv_sb) si.smod.set_filter(VCF_FILTERS::HighSNVSB);
+        }
 
-       if(opt.is_max_snv_hpol) {
-           if(si.hpol>opt.max_snv_hpol) si.smod.set_filter(VCF_FILTERS::HighSNVHPOL);
-       }
-   }
+        if(opt.is_max_snv_hpol) {
+            if(static_cast<int>(si.hpol)>opt.max_snv_hpol) si.smod.set_filter(VCF_FILTERS::HighSNVHPOL);
+        }
+    }
 }
 
 
@@ -93,7 +93,7 @@ add_site_modifiers(const gvcf_options& opt,
         si.smod.gq=si.dgt.poly.max_gt_qphred;
         si.smod.max_gt=si.dgt.poly.max_gt;
     } else {
-        if(si.dgt.genome.max_gt_qphred<si.dgt.poly.max_gt_qphred){
+        if(si.dgt.genome.max_gt_qphred<si.dgt.poly.max_gt_qphred) {
             set_site_gt(si.dgt.genome,si.smod);
         } else {
             set_site_gt(si.dgt.poly,si.smod);
@@ -126,7 +126,7 @@ gvcf_aggregator(const starling_options& opt,
     assert(report_range.is_end_pos);
 
     if(! opt.is_gvcf_output()) return;
-        
+
     assert(NULL != _osptr);
     assert((NULL !=_chrom) && (strlen(_chrom)>0));
 
@@ -308,10 +308,10 @@ add_cigar_to_ploidy(const ALIGNPATH::path_t& apath,
     using namespace ALIGNPATH;
     const unsigned as(apath.size());
     int offset(-1);
-    for(unsigned i(0);i<as;++i) {
+    for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(apath[i]);
         if(ps.type==MATCH) {
-            for(unsigned j(0);j<ps.length;++j){
+            for(unsigned j(0); j<ps.length; ++j) {
                 if(offset>=0) ploidy[offset]++;
                 offset++;
             }
@@ -361,7 +361,7 @@ add_indel_modifiers(const gvcf_options& opt,
 
 
 
-// is the current site eligable to even be considered for block compression?
+// is the current site eligible to even be considered for block compression?
 static
 bool
 is_site_record_blockable(const gvcf_options& opt,
@@ -395,7 +395,7 @@ queue_site_record(const site_info& si) {
     if(! _block.test(si)) {
         write_block_site_record();
     }
-    
+
     _block.join(si);
 }
 
@@ -408,7 +408,7 @@ print_vcf_alt(const unsigned gt,
               std::ostream& os) {
 
     bool is_print(false);
-    for(unsigned b(0);b<N_BASE;++b){
+    for(unsigned b(0); b<N_BASE; ++b) {
         if(b==ref_gt) continue;
         if(DIGT::expect2(b,gt)) {
             if(is_print) os << ',';
@@ -428,7 +428,7 @@ print_site_ad(const site_info& si,
 
     os << si.known_counts[si.dgt.ref_gt];
 
-    for(unsigned b(0);b<N_BASE;++b){
+    for(unsigned b(0); b<N_BASE; ++b) {
         if(b==si.dgt.ref_gt) continue;
         if(DIGT::expect2(b,si.smod.max_gt)) {
             os << ',' << si.known_counts[b];
@@ -611,7 +611,7 @@ modify_indel_conflict_site(site_info& si) {
 void
 gvcf_aggregator::
 modify_overlap_indel_record() {
-    
+
     // can only handle simple 2-indel overlaps right now:
     assert(_indel_buffer_size==2);
 
@@ -633,7 +633,7 @@ modify_overlap_indel_record() {
     ii.imod.ploidy.resize(_indel_end_pos-ii.pos,0);
 
     // add per-haplotype information:
-    for(unsigned hap(0);hap<2;++hap) {
+    for(unsigned hap(0); hap<2; ++hap) {
         //reduce qual and gt to the lowest of the set:
         if(hap) {
             if(ii.dindel.indel_qphred>_indel_buffer[hap].dindel.indel_qphred) {
@@ -643,7 +643,7 @@ modify_overlap_indel_record() {
                 ii.dindel.max_gt_qphred = _indel_buffer[hap].dindel.max_gt_qphred;
             }
         }
-        
+
         // extend leading sequence start back 1 for vcf compat, and end back 1 to concat with vcf_indel_seq
         _ref.get_substring(indel_begin_pos,(_indel_buffer[hap].pos-indel_begin_pos)-1,leading_seq);
         const unsigned trail_len(_indel_end_pos-_indel_buffer[hap].ik.right_pos());
@@ -675,7 +675,7 @@ gvcf_aggregator::
 modify_conflict_indel_record() {
     assert(_indel_buffer_size>1);
 
-    for(unsigned i(0);i<_indel_buffer_size;++i) {
+    for(unsigned i(0); i<_indel_buffer_size; ++i) {
         indel_info& ii(_indel_buffer[i]);
         get_hap_cigar(ii.imod.cigar,ii.ik);
 
@@ -690,7 +690,7 @@ modify_conflict_indel_record() {
 void
 gvcf_aggregator::
 write_indel_record(const unsigned write_index) {
-    
+
     assert(_indel_buffer_size>0);
 
     // flush any non-variant block before starting:
@@ -709,8 +709,8 @@ write_indel_record(const unsigned write_index) {
     if(ii.imod.is_overlap) {
         end_index++;
     }
-        
-    for(unsigned i(write_index);i<=end_index;++i) {
+
+    for(unsigned i(write_index); i<=end_index; ++i) {
         if(i!=write_index) os << ',';
         os << _indel_buffer[i].iri.vcf_indel_seq;
     }
@@ -724,13 +724,13 @@ write_indel_record(const unsigned write_index) {
 
     // INFO
     os << "CIGAR=";
-    for(unsigned i(write_index);i<=end_index;++i) {
+    for(unsigned i(write_index); i<=end_index; ++i) {
         if(i!=write_index) os << ',';
         os << _indel_buffer[i].imod.cigar;
     }
     os << ';';
     os << "RU=";
-    for(unsigned i(write_index);i<=end_index;++i) {
+    for(unsigned i(write_index); i<=end_index; ++i) {
         if(i!=write_index) os << ',';
         if(_indel_buffer[i].iri.is_repeat_unit &&
            (_indel_buffer[i].iri.repeat_unit.size() <= 20)) {
@@ -741,7 +741,7 @@ write_indel_record(const unsigned write_index) {
     }
     os << ';';
     os << "REFREP=";
-    for(unsigned i(write_index);i<=end_index;++i) {
+    for(unsigned i(write_index); i<=end_index; ++i) {
         if(i!=write_index) os << ',';
         if(_indel_buffer[i].iri.is_repeat_unit) {
             os << _indel_buffer[i].iri.ref_repeat_count;
@@ -751,7 +751,7 @@ write_indel_record(const unsigned write_index) {
     }
     os << ';';
     os << "IDREP=";
-    for(unsigned i(write_index);i<=end_index;++i) {
+    for(unsigned i(write_index); i<=end_index; ++i) {
         if(i!=write_index) os << ',';
         if(_indel_buffer[i].iri.is_repeat_unit) {
             os << _indel_buffer[i].iri.indel_repeat_count;
@@ -772,11 +772,11 @@ write_indel_record(const unsigned write_index) {
 
     // SAMPLE AD:
     unsigned ref_count(0);
-    for(unsigned i(write_index);i<=end_index;++i) {
+    for(unsigned i(write_index); i<=end_index; ++i) {
         ref_count = std::max(ref_count,_indel_buffer[i].isri.n_q30_ref_reads);
     }
     os << ref_count;
-    for(unsigned i(write_index);i<=end_index;++i) {
+    for(unsigned i(write_index); i<=end_index; ++i) {
         os << ',' << _indel_buffer[i].isri.n_q30_indel_reads;
     }
 
@@ -790,7 +790,7 @@ gvcf_aggregator::
 process_overlaps() {
 
     if(0==_indel_buffer_size) return;
-    
+
     bool is_conflict_print(false);
 
     // do the overlap processing:
@@ -798,7 +798,7 @@ process_overlaps() {
         // simple case of no overlap:
         modify_single_indel_record();
     } else {
-        if(is_simple_indel_overlap(_indel_buffer,_indel_buffer_size)){
+        if(is_simple_indel_overlap(_indel_buffer,_indel_buffer_size)) {
             // handle the simplest possible overlap case (two hets):
             modify_overlap_indel_record();
         } else {
@@ -811,7 +811,7 @@ process_overlaps() {
     //    *_osptr << "INDEL_SIZE: " << _indel_buffer_size << "\n";
 
     // process sites to be consistent with overlapping indels:
-    for(unsigned i(0);i<_site_buffer_size;++i) {
+    for(unsigned i(0); i<_site_buffer_size; ++i) {
         const pos_t offset(_site_buffer[i].pos-_indel_buffer[0].pos);
         assert(offset>=0);
         if(! is_conflict_print) {

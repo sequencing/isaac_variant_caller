@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -36,7 +36,7 @@ struct id_set {
     /// number in either case
     unsigned insert_key(const K& key) {
         const typename k2id_t::const_iterator i(_k2id.find(key));
-        if(i==_k2id.end()){
+        if(i==_k2id.end()) {
             const unsigned id(_id2k.size());
             _k2id[key]=id;
             _id2k.push_back(key);
@@ -59,7 +59,7 @@ struct id_set {
         }
         return i->second;
     }
- 
+
     /// \brief Get pre-existing key
     const K& get_key(const unsigned id) const {
         if(id>=_id2k.size()) {
@@ -69,7 +69,7 @@ struct id_set {
     }
 
     unsigned size() const { return _id2k.size(); }
-    
+
     void clear() { _k2id.clear(); _id2k.clear(); }
 
 private:
@@ -94,7 +94,7 @@ struct id_map {
     /// return id number in either case
     unsigned insert(const K& key, const V& value) {
         const typename k2id_t::const_iterator i(_k2id.find(key));
-        if(i==_k2id.end()){
+        if(i==_k2id.end()) {
             const unsigned id(_id2kv.size());
             _k2id[key]=id;
             _id2kv.push_back(std::make_pair(key,value));
@@ -108,7 +108,7 @@ struct id_map {
     bool test_key(const K& key) const {
         return (_k2id.find(key) != _k2id.end());
     }
-   
+
     /// \brief Get id of inserted key
     unsigned get_id(const K& key) const {
         const typename k2id_t::const_iterator i(_k2id.find(key));
@@ -117,7 +117,7 @@ struct id_map {
         }
         return i->second;
     }
-    
+
     /// \brief Get pre-existing key
     const K& get_key(const unsigned id) const {
         if(id>=_id2kv.size()) {
@@ -135,7 +135,7 @@ struct id_map {
     }
 
     unsigned size() const { return _id2kv.size(); }
-    
+
     void clear() { _k2id.clear(); _id2kv.clear(); }
 
 private:

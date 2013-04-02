@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -40,7 +40,7 @@
 
 
 namespace INPUT_TYPE {
-    enum index_t { NONE, READ, CONTIG, INDEL };
+enum index_t { NONE, READ, CONTIG, INDEL };
 }
 
 struct starling_input_stream_hander;
@@ -68,7 +68,7 @@ struct starling_input_stream_data {
         // sample_no for input indels:
         _indels.push_back(std::make_pair(sample_no,&vr));
     }
-    
+
 private:
 
     void
@@ -132,7 +132,7 @@ private:
 
 
 // streams multiple bams, contig and vcf files to present the data
-// in positional order (but with offsets for contigs and vcfs to 
+// in positional order (but with offsets for contigs and vcfs to
 // run ahead of the bam reads)
 //
 struct starling_input_stream_handler {
@@ -167,7 +167,7 @@ private:
     // \TODO redesign so that we handle the much larger deletions coming
     // from GROUPER (more) correctly. Idea is (1) to prevent any possible
     // double counting of a widely separated GROUPER and genomic read and
-    // (2) to handle deletion spanning reads as segmented reads using the 
+    // (2) to handle deletion spanning reads as segmented reads using the
     // exon handling system.
     //
     const pos_t _contig_lead;
@@ -177,12 +177,12 @@ private:
 
     input_record_info _current;
     input_record_info _last;
-    
+
     bool _is_end;
-    
+
     bool _is_head_pos;
     pos_t _head_pos;
-    
+
     std::priority_queue<input_record_info> _stream_queue;
 };
 

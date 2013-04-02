@@ -1,5 +1,5 @@
 
-Isaac Variant Caller -- 1.0.0
+Isaac Variant Caller -- 1.0.1
 ---------------
 
 Christopher Saunders (csaunders@illumina.com)
@@ -88,27 +88,18 @@ distribution tarball. These included prerequisites are:
 The Makefile included in the IVC workflow tarball will compile both
 the included prerequisite packages and the variant caller itself.  To
 do this, go to the root of the isaac_variant_caller_workflow directory
-tree and type 'make'.
+tree and run "./configure --prefix=$INSTALL_DIR" followed by make. 
 
-Example build -- default installation directory:
+Example build:
 """
 tar -xzf isaac_variant_caller_workflow.tar.gz
 cd isaac_variant_caller_workflow
+./configure --prefix=$INSTALLATION_DIR
 make
 """
 
 If the installation succeeds, all files will be installed to
-"isaac_variant_caller_workflow/install".
-
-To install to a custom directory, provide a path to the environment
-variable INSTALL_DIR
-
-Example build -- custom installation directory:
-"""
-tar -xzf isaac_variant_caller_workflow.tar.gz
-cd isaac_variant_caller_workflow
-INSTALL_DIR=/path/to/install/dir make
-"""
+"$INSTALLATION_DIR"
 
 The final installation step is to run the workflow on the demostration
 data included in the distribution. Running the demo can be used to

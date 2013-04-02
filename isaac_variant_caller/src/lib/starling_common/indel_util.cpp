@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -22,14 +22,14 @@
 bool
 is_indel_conflict(const indel_key& ik1,
                   const indel_key& ik2) {
-    
+
     // add one to the end_pos of all indels to prevent immediately
     // adjacent indels in the final alignments:
     pos_range pr1(ik1.open_pos_range());
     pr1.end_pos++;
     pos_range pr2(ik2.open_pos_range());
     pr2.end_pos++;
-    
+
     return pr1.is_range_intersect(pr2);
 }
 

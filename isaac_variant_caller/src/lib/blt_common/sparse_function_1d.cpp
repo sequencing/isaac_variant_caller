@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -110,14 +110,14 @@ integrate_sparsefunc(const sparse_function& sf,
     // handle uncovered boundaries:
 
     //
-    for(;i!=i_end;++i){
+    for(; i!=i_end; ++i) {
         const blt_float_t& x(i->first);
         const blt_float_t& y(i->second);
 
         const bool is_in_range(in_range(min_x,x,max_x));
         bool is_last_in_range(false);
 
-        if(! is_last_set){
+        if(! is_last_set) {
             if(is_in_range) {
                 // implicit start segment:
                 const blt_float_t segrange(x-min_x);
@@ -127,7 +127,7 @@ integrate_sparsefunc(const sparse_function& sf,
         } else {
             is_last_in_range=(in_range(min_x,last_x,max_x));
 
-            if(is_in_range && 
+            if(is_in_range &&
                is_last_in_range) {
                 // entire segment is enclosed in target range:
 
@@ -153,7 +153,7 @@ integrate_sparsefunc(const sparse_function& sf,
                 const blt_float_t segrange(max_x-last_x);
                 const blt_float_t func_segrange(x-last_x);
 
-                if(func_segrange>0.){
+                if(func_segrange>0.) {
                     const blt_float_t frac(segrange/func_segrange);
                     assert(frac<=1.);
                     // simple linear interpolate:
@@ -177,7 +177,7 @@ integrate_sparsefunc(const sparse_function& sf,
         const blt_float_t segrange(max_x-last_x);
         sum += (last_y*(wf.get_val(max_x)+wf.get_val(last_x))) * (segrange/range);
     }
-    
+
     return sum;
 }
 
@@ -198,8 +198,8 @@ integrate_ln_sparsefunc(const sparse_function& sf,
 
     bool is_max(false);
     blt_float_t max(0);
-    for(sit i(i_start);i!=i_end;++i){
-        if((! is_max) || (i->second > max)){
+    for(sit i(i_start); i!=i_end; ++i) {
+        if((! is_max) || (i->second > max)) {
             max=i->second;
             is_max=true;
         }
@@ -210,7 +210,7 @@ integrate_ln_sparsefunc(const sparse_function& sf,
 #endif
 
     sparse_function scaled_sf;
-    for(sit i(i_start);i!=i_end;++i){
+    for(sit i(i_start); i!=i_end; ++i) {
         scaled_sf.insert(i->first,std::exp(i->second-max));
 #ifdef DEBUG_SFUNC
         std::cerr << "SFUNC: sf: x,y: " << i->first << " " << i->second << "\n";

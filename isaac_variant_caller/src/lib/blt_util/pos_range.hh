@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -23,22 +23,22 @@
 #include <algorithm>
 #include <iosfwd>
 
+/// \brief number ranges which are potentially unbounded
 ///
-/// utility to handle (potentially open) number ranges and test
-/// intersections to either positions or other ranges.
+/// Object handles representation, including intersection with positions
+/// and other ranges.
 ///
 /// note coding convention for all ranges '_pos fields' is:
-/// XXX_begin_pos is zero-indexed position at the begining of the range
+/// XXX_begin_pos is zero-indexed position at the beginning of the range
 /// XXX_end_pos is zero-index position 1 step after the end of the range
 ///
 /// any non-range pos value is assumed to be zero-indexed
 ///
-
 struct pos_range {
-    
+
     pos_range() : is_begin_pos(false), is_end_pos(false), begin_pos(0), end_pos(0) {}
 
-    pos_range(const pos_t bp,const pos_t ep) 
+    pos_range(const pos_t bp,const pos_t ep)
         :  is_begin_pos(true), is_end_pos(true), begin_pos(bp), end_pos(ep) {}
 
     void
@@ -81,16 +81,16 @@ struct pos_range {
 
     bool
     is_range_intersect(const pos_range& pr) const {
-        return (((! pr.is_end_pos) || (! is_begin_pos) || (pr.end_pos > begin_pos)) && 
+        return (((! pr.is_end_pos) || (! is_begin_pos) || (pr.end_pos > begin_pos)) &&
                 ((! pr.is_begin_pos) || (! is_end_pos) || (pr.begin_pos < end_pos)));
     }
 
     /// does this range completely overlap pr?
     bool
     is_superset_of(const pos_range& pr) const {
-        return 
-            (((! is_end_pos) || 
-              ( pr.is_end_pos && (pr.end_pos <= end_pos) )) && 
+        return
+            (((! is_end_pos) ||
+              ( pr.is_end_pos && (pr.end_pos <= end_pos) )) &&
              ((! is_begin_pos) ||
               ( pr.is_begin_pos && (pr.begin_pos >= begin_pos) )));
     }
@@ -108,9 +108,8 @@ struct pos_range {
 };
 
 
-// More restricted closed form. This object allows functions to express a
-// closed interval requirement
-//
+/// \brief pos_range for bounded intervals only
+///
 struct known_pos_range : public pos_range {
 
     known_pos_range(const pos_t bp,const pos_t ep) : pos_range(bp,ep) {}

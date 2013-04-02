@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -40,7 +40,7 @@
 //
 bool
 map_grouper_contig_read_to_genome(const grouper_contig& ctg,
-                                  alignment& read_al){
+                                  alignment& read_al) {
 
     using namespace ALIGNPATH;
 
@@ -49,11 +49,11 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
     //
     const unsigned rp_size(read_al.path.size());
     assert(rp_size>=1);
-    for(unsigned i(0);i<rp_size;++i){
+    for(unsigned i(0); i<rp_size; ++i) {
         const align_t ali(read_al.path[i].type);
         assert((ali==MATCH) || (ali==SOFT_CLIP));
     }
-    
+
     const unsigned al_ref_length(apath_ref_length(read_al.path));
 
     pos_t read_begin_pos(read_al.pos);
@@ -69,7 +69,7 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
     }
 
     // mark any sequence hanging off the end of the contig as soft-clipped:
-    if(read_begin_pos<0){
+    if(read_begin_pos<0) {
         path_segment seg;
         seg.type = SOFT_CLIP;
         seg.length = -read_begin_pos;
@@ -98,7 +98,7 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
             n_seg=sinfo_ptr->n_seg;
         }
 
-        for(unsigned i(0);i<n_seg;++i) {
+        for(unsigned i(0); i<n_seg; ++i) {
             increment_path(ctg.path,path_index,
                            contig_segment_offset,
                            ref_segment_end_pos);
@@ -107,7 +107,7 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
         bool is_edge_segment(false);
         unsigned read_segment_reduction(0);
 
-        if(! is_read_path_begin){
+        if(! is_read_path_begin) {
             if(read_begin_pos >= static_cast<pos_t>(contig_segment_offset)) continue;
 
             is_read_path_begin=true;
@@ -131,7 +131,7 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
         }
 
         const bool is_final_seg(read_end_pos <= static_cast<pos_t>(contig_segment_offset));
-        if(is_final_seg){
+        if(is_final_seg) {
             is_edge_segment=true;
             const pos_t shift(contig_segment_offset-read_end_pos);
             if(is_swap_start) {
@@ -152,7 +152,7 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
         } else {
             new_path.push_back(seg);
         }
-        
+
         if(is_final_seg) break;
     }
 
@@ -181,10 +181,10 @@ map_grouper_contig_read_to_genome(const grouper_contig& ctg,
         rp.clear();
         align_t last_type(NONE);
         const unsigned nps(new_path.size());
-        for(unsigned i(0);i<nps;++i){
+        for(unsigned i(0); i<nps; ++i) {
             const path_segment& ps(new_path[i]);
             if(ps.type == MATCH) is_genome_align=true;
-            if(ps.type != last_type){
+            if(ps.type != last_type) {
                 rp.push_back(ps);
                 last_type=ps.type;
             } else {
@@ -209,9 +209,7 @@ bad_header_error(const std::string& header) {
 
 bool
 get_next_contig(std::istream& is,
-                grouper_contig& ctg){
-
-    static const char header_delim[] = "| \t\n\r";
+                grouper_contig& ctg) {
 
     ctg.clear();
 
@@ -224,33 +222,35 @@ get_next_contig(std::istream& is,
         if (c != '>') {
             throw blt_exception("ERROR: Unexpected format in GROUPER contig file\n");
         }
-        
+
         std::string header;
         if (not std::getline(is,header)) {
             throw blt_exception("ERROR: Unexpected format in GROUPER contig file\n");
         }
-        
+
         static const unsigned header_field_count(5);
         std::string::size_type begin_pos,pos(1);
-        for(unsigned i(0);i<header_field_count;++i){
+        for(unsigned i(0); i<header_field_count; ++i) {
+            static const char header_delim[] = "| \t\n\r";
+
             begin_pos=header.find_first_not_of(header_delim,pos);
             pos=header.find_first_of(header_delim,begin_pos);
-            
+
             if(std::string::npos == begin_pos) bad_header_error(header);
-            
-            if       (i==0){
+
+            if       (i==0) {
                 ctg.id=header.substr(begin_pos,pos-begin_pos);
-            } else if(i==1){
+            } else if(i==1) {
                 ctg.chrom=header.substr(begin_pos,pos-begin_pos);
-            } else if(i==2){
+            } else if(i==2) {
                 ctg.pos=boost::lexical_cast<pos_t>(header.substr(begin_pos,pos-begin_pos))-1;
-            } else if(i==3){
+            } else if(i==3) {
                 const std::string cigar(header.substr(begin_pos,pos-begin_pos));
                 cigar_to_apath(cigar.c_str(),ctg.path);
-            } else if(i==4){
+            } else if(i==4) {
                 //intentional throwaway:
                 //pos_t indel_begin_pos=boost::lexical_cast<pos_t>(header.substr(begin_pos,pos-begin_pos))-1;
-                
+
             } else {
                 bad_header_error(header);
             }
@@ -271,14 +271,14 @@ get_next_contig(std::istream& is,
 
         std::string::size_type begin_pos,pos(1);
         std::string& seq(ctg.seq);
-        while (std::getline(is,line_buff)){
+        while (std::getline(is,line_buff)) {
             begin_pos=line_buff.find_first_not_of(seq_delim);
             pos=line_buff.find_last_not_of(seq_delim)+1;
 
             if(ctg.is_usable) {
                 seq += line_buff.substr(begin_pos,pos-begin_pos);
                 if(seq.size() > MAX_CONTIG_SIZE) {
-                    log_os << "WARNING: GROUPER contig: '" << ctg.id << "' exceeds maximum contig size. Skipping...\n"; 
+                    log_os << "WARNING: GROUPER contig: '" << ctg.id << "' exceeds maximum contig size. Skipping...\n";
                     ctg.is_usable=false;
                 }
             }
@@ -292,7 +292,7 @@ get_next_contig(std::istream& is,
 
 contig_data_manager::
 contig_data_manager(const std::string& contig_filename,
-                    const std::string& contig_read_filename) 
+                    const std::string& contig_read_filename)
     : _contig_isp(new std::ifstream)
     , _contig_read_isp(new std::ifstream) {
 
@@ -308,7 +308,7 @@ contig_data_manager(const std::string& contig_filename,
         open_ifstream(contig_is,contig_filename.c_str());
         open_ifstream(contig_read_is,contig_read_filename.c_str());
     }
-    
+
     _contig_read_exrp.reset(new export_stream_reader(contig_read_is,contig_filename.c_str()));
     _creaderp.reset(new contig_reader(contig_is));
 }

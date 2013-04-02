@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -30,15 +30,15 @@
 //
 struct window_average {
 
-    window_average(const int32_t full_size)
+    window_average(const int32_t init_full_size)
         : _total(0)
         , _size(0)
         , _null_size(0)
         , _head(0)
-        , _full_size(full_size)
-        , _buf(full_size)
-        , _is_buf(full_size)
-    { assert(full_size>0); }
+        , _full_size(init_full_size)
+        , _buf(init_full_size)
+        , _is_buf(init_full_size)
+    { assert(init_full_size>0); }
 
     void
     reset() {

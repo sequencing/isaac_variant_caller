@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -73,10 +73,10 @@ struct position_nonref_allele_freq_loghood_minfunc : public codemin::minfunc_1d_
     /// assumes pi has already had bad cases filtered out:
     explicit
     position_nonref_allele_freq_loghood_minfunc(const snp_pos_info& pi,
-                                                const unsigned nonref_id) 
+                                                const unsigned nonref_id)
         : _pi(pi)
         , _nonref_id(nonref_id)
-        , _nonref2_id(nonref2_id) 
+        , _nonref2_id(nonref2_id)
     {}
 
     virtual double val(const double nonref_freq) const;
@@ -106,7 +106,7 @@ struct position_allele_distro_loghood_minfunc : public codemin::minfunc_interfac
     explicit
     position_allele_distro_loghood_minfunc(const snp_pos_info& pi,
                                            const bool* is_allele_used = 0) : _pi(pi), _n_allele(0) {
-        for(unsigned i(0);i<N_BASE;++i) {
+        for(unsigned i(0); i<N_BASE; ++i) {
             if((! is_allele_used) || is_allele_used[i]) {
                 _allele_map[_n_allele] = i;
                 _n_allele++;

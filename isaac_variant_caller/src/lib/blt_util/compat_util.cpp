@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -25,12 +25,14 @@
 #include <iostream>
 
 
+#ifdef _WIN32
+#include "win32_realpath.c"
+#endif
+
+
 
 bool
 compat_realpath(std::string& path) {
-#ifdef _WIN32
-    XXXXXX NOT IMPLEMENTED;
-#else 
     errno=0;
     const char* newpath(realpath(path.c_str(),NULL));
     if((NULL==newpath) || (errno!=0)) {
@@ -40,7 +42,6 @@ compat_realpath(std::string& path) {
     path = newpath;
     free((void*)newpath);
     return true;
-#endif
 }
 
 
@@ -84,19 +85,19 @@ test_bn(const char* x) {
 
 void
 test_compat() {
-  test_round(3.5);
-  test_round(3.2);
-  test_round(3.7);
-  test_round(-1);
-  test_round(-1.5);
-  test_round(-1.7);
-  test_round(-1.2);
+    test_round(3.5);
+    test_round(3.2);
+    test_round(3.7);
+    test_round(-1);
+    test_round(-1.5);
+    test_round(-1.7);
+    test_round(-1.2);
 
-  test_bn("/foo");
-  test_bn("foo");
-  test_bn("//");
-  test_bn("/");
-  test_bn("");
+    test_bn("/foo");
+    test_bn("foo");
+    test_bn("//");
+    test_bn("/");
+    test_bn("");
 }
 
 

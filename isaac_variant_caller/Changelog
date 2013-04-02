@@ -1,6 +1,16 @@
+v2.0.4
+- STARKA-21 Add command-line control for snv hpol filter. Set snv and indel hpol filters
+off by default.
+- STARKA-22 Reorganize build system around libraries, add unit test framework as
+part of every build and seed framework with a few tests for each library
 v2.0.3
-fix gVCF output so that GT does not contain allele numbers which are
+- STARKA-16 fix gVCF output so that GT does not contain allele numbers which are
 not in the ALT tag
+- Add win32 compat fixes from Eric Roller
+- STARKA-13 Groom CIGAR alignments on input to remove zero-length and PAD
+segments
+- STARKA-11 Samtools upgraded to 0.1.18 to resolve issues reported for 
+strelka run with long-line version of hg19 reference.
 v2.0.2
 - Add haplotype score option to command-line
 v2.0.1
@@ -8,7 +18,7 @@ v2.0.1
 v2.0.0
 - First RC. No changes from v2.0a3
 v2.0a3
-- Completed gVCF output to pass vcf-validator
+- Completed gVCF outptu to pass vcf-validator
 - added AD tags to snps and indels
 - added haplotypescore but left this turned off
 - added command-line controls for min-gqx,max-depth-factor and other filters/blocking thresholds
@@ -17,3 +27,9 @@ v2.0a2
 - Bugfix: gVCF output was being written +1 past end of requirested range
 v2.0a1
 - initial version of starling with direct gVCF output
+v1.1.0
+- Import all updates from starling/strelka maintained on the strelka
+standalone 0.4.10 tag.
+v1.0.0
+- initial transfer of v1 starling/strelka from the public strelka release
+branch

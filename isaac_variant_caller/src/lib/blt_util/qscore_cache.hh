@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -52,7 +52,8 @@ struct qphred_cache {
     }
 
     enum { MAX_QSCORE = 70,
-           MAX_MAP = 90 };
+           MAX_MAP = 90
+         };
 
     static
     void
@@ -77,7 +78,7 @@ private:
 
     static
     void
-    qscore_check_int(const int qscore){
+    qscore_check_int(const int qscore) {
         static const char* label = "phred";
         qscore_check(qscore,label);
     }
@@ -99,7 +100,7 @@ private:
         qscore_check_int(qscore);
         return q2lne[qscore];
     }
-    
+
     int
     get_mapped_qscore_imp(const int basecall_qscore,
                           int mapping_qscore) const {
@@ -128,7 +129,7 @@ struct qlogodds_cache {
 
 private:
     qlogodds_cache();
- 
+
     void qscore_error(const int qscore) const;
 
     double

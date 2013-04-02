@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -14,8 +14,7 @@
 
 /// \author Chris Saunders
 ///
-#ifndef __STREAM_STAT_HH
-#define __STREAM_STAT_HH
+#pragma once
 
 #include <cmath>
 
@@ -23,7 +22,11 @@
 
 
 
-/// \brief from the indel finder's single_pass mean/sd calculator:
+/// \brief Simple on-line statistics for double values
+///
+/// derived From Tony Cox's IndelFinder code
+///
+/// TODO: there are 3 minor variants of stream_stat now... consolidate this logic via template/inheritance
 ///
 struct stream_stat {
 
@@ -53,7 +56,7 @@ struct stream_stat {
     }
 
     int size() const { return k_; }
-    bool empty() const { return (k_==0); } 
+    bool empty() const { return (k_==0); }
 
     double min() const { return ((k_<1) ? nan() : min_); }
     double max() const { return ((k_<1) ? nan() : max_); }
@@ -76,5 +79,3 @@ private:
 
 std::ostream& operator<<(std::ostream& os,const stream_stat& ss);
 
-
-#endif

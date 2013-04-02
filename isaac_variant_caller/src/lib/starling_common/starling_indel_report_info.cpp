@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -43,7 +43,7 @@ get_indel_desc(const indel_key& ik,
 
     if((ik.type == INDEL::INSERT) ||
        (ik.type == INDEL::DELETE) ||
-       (ik.type == INDEL::SWAP)){
+       (ik.type == INDEL::SWAP)) {
         indel_desc += boost::lexical_cast<std::string>(ik.length);
         if((ik.type == INDEL::INSERT) ||
            (ik.type == INDEL::SWAP)) {
@@ -57,7 +57,7 @@ get_indel_desc(const indel_key& ik,
         }
     } else if(ik.type == INDEL::BP_LEFT) {
         indel_desc = "BP_LEFT";
-    } else if(ik.type == INDEL::BP_RIGHT){
+    } else if(ik.type == INDEL::BP_RIGHT) {
         indel_desc = "BP_RIGHT";
     } else {
         assert(0);
@@ -71,12 +71,12 @@ void
 copy_subseq(const std::string& in_seq,
             const pos_t start_pos,
             const pos_t end_pos,
-            std::string& out_seq){
+            std::string& out_seq) {
 
     const char* ip(in_seq.c_str());
     const pos_t is(in_seq.size());
     out_seq.clear();
-    for(pos_t p(start_pos);p<end_pos;++p) {
+    for(pos_t p(start_pos); p<end_pos; ++p) {
         out_seq += get_seq_base(ip,is,p);
     }
 }
@@ -89,10 +89,10 @@ void
 copy_ref_subseq(const reference_contig_segment& ref,
                 const pos_t start_pos,
                 const pos_t end_pos,
-                std::string& out_seq){
+                std::string& out_seq) {
 
     out_seq.clear();
-    for(pos_t p(start_pos);p<end_pos;++p) {
+    for(pos_t p(start_pos); p<end_pos; ++p) {
         out_seq += ref.get_base(p);
     }
 }
@@ -120,20 +120,20 @@ get_indel_summary_strings(const indel_key& ik,
                           const reference_contig_segment& ref,
                           std::string& indel_desc,
                           std::string& indel_seq,
-                          std::string& indel_ref_seq){
+                          std::string& indel_ref_seq) {
 
     get_indel_desc(ik,indel_desc);
 
     if((ik.type == INDEL::INSERT) ||
        (ik.type == INDEL::BP_LEFT) ||
        (ik.type == INDEL::BP_RIGHT)) {
-        indel_seq = id.seq;
+        indel_seq = id.get_insert_seq();
         indel_ref_seq = std::string(indel_seq.size(),'-');
     } else if(ik.type == INDEL::DELETE) {
         set_delete_seq(ik,ref,indel_ref_seq);
         indel_seq = std::string(indel_ref_seq.size(),'-');
     } else if(ik.type == INDEL::SWAP) {
-        indel_seq = id.seq;
+        indel_seq = id.get_insert_seq();
         set_delete_seq(ik,ref,indel_ref_seq);
         int idelt(static_cast<int>(ik.length)-static_cast<int>(ik.swap_dlength));
         if(idelt>0) { indel_ref_seq += std::string(idelt,'-'); }
@@ -156,22 +156,22 @@ get_vcf_summary_strings(const indel_key& ik,
                         const indel_data& id,
                         const reference_contig_segment& ref,
                         std::string& vcf_indel_seq,
-                        std::string& vcf_ref_seq){
-    
+                        std::string& vcf_ref_seq) {
+
     if       (ik.is_breakpoint()) {
         if       (ik.type == INDEL::BP_LEFT) {
             copy_ref_subseq(ref,ik.pos-1,ik.pos,vcf_ref_seq);
-            vcf_indel_seq = vcf_ref_seq + id.seq + '.';
-        } else if(ik.type == INDEL::BP_RIGHT){
+            vcf_indel_seq = vcf_ref_seq + id.get_insert_seq() + '.';
+        } else if(ik.type == INDEL::BP_RIGHT) {
             copy_ref_subseq(ref,ik.pos,ik.pos+1,vcf_ref_seq);
-            vcf_indel_seq = '.' + id.seq + vcf_ref_seq;
+            vcf_indel_seq = '.' + id.get_insert_seq() + vcf_ref_seq;
         } else {
             assert(0);
         }
     } else {
         copy_ref_subseq(ref,ik.pos-1,ik.pos+ik.delete_length(),vcf_ref_seq);
         copy_ref_subseq(ref,ik.pos-1,ik.pos,vcf_indel_seq);
-        vcf_indel_seq += id.seq;
+        vcf_indel_seq += id.get_insert_seq();
     }
 }
 
@@ -195,9 +195,9 @@ set_repeat_info(const indel_key& ik,
     unsigned insert_repeat_count(0);
     unsigned delete_repeat_count(0);
 
-    if       (iri.it == INDEL::INSERT){
+    if       (iri.it == INDEL::INSERT) {
         get_seq_repeat_unit(iri.indel_seq,iri.repeat_unit,insert_repeat_count);
-    } else if(iri.it == INDEL::DELETE){
+    } else if(iri.it == INDEL::DELETE) {
         get_seq_repeat_unit(iri.ref_seq,iri.repeat_unit,delete_repeat_count);
     } else if(iri.it == INDEL::SWAP) {
         std::string insert_ru;
@@ -219,9 +219,9 @@ set_repeat_info(const indel_key& ik,
         const int repeat_unit_size(static_cast<int>(iri.repeat_unit.size()));
 
         // count upstream repeats:
-        for(pos_t i(indel_begin_pos-repeat_unit_size);i>=0;i-=repeat_unit_size){
+        for(pos_t i(indel_begin_pos-repeat_unit_size); i>=0; i-=repeat_unit_size) {
             bool is_repeat(true);
-            for(int j(0);j<repeat_unit_size;++j){
+            for(int j(0); j<repeat_unit_size; ++j) {
                 if(ref.get_base(i+j) != iri.repeat_unit[j]) {
                     is_repeat = false;
                     break;
@@ -233,9 +233,9 @@ set_repeat_info(const indel_key& ik,
 
         // count downstream repeats:
         const pos_t rs(ref.end());
-        for(pos_t i(indel_end_pos);(i+static_cast<pos_t>(repeat_unit_size)-1)<rs;i+=repeat_unit_size){
+        for(pos_t i(indel_end_pos); (i+static_cast<pos_t>(repeat_unit_size)-1)<rs; i+=repeat_unit_size) {
             bool is_repeat(true);
-            for(int j(0);j<repeat_unit_size;++j){
+            for(int j(0); j<repeat_unit_size; ++j) {
                 if(ref.get_base(i+j) != iri.repeat_unit[j]) {
                     is_repeat = false;
                     break;
@@ -245,7 +245,7 @@ set_repeat_info(const indel_key& ik,
             indel_context_repeat_count += 1;
         }
     }
-    
+
     iri.is_repeat_unit = true;
     iri.ref_repeat_count = indel_context_repeat_count+delete_repeat_count;
     iri.indel_repeat_count = indel_context_repeat_count+insert_repeat_count;
@@ -257,8 +257,8 @@ void
 get_starling_indel_report_info(const indel_key& ik,
                                const indel_data& id,
                                const reference_contig_segment& ref,
-                               starling_indel_report_info& iri){
-    
+                               starling_indel_report_info& iri) {
+
     // indel summary info
     get_indel_summary_strings(ik,id,ref,iri.desc,iri.indel_seq,iri.ref_seq);
     get_vcf_summary_strings(ik,id,ref,iri.vcf_indel_seq,iri.vcf_ref_seq);
@@ -274,7 +274,7 @@ get_starling_indel_report_info(const indel_key& ik,
 
         if(ik.type != INDEL::BP_RIGHT) {
             iri.ref_upstream.clear();
-            for(pos_t i(indel_begin_pos-static_cast<pos_t>(INDEL_CONTEXT_SIZE));i<indel_begin_pos;++i){
+            for(pos_t i(indel_begin_pos-static_cast<pos_t>(INDEL_CONTEXT_SIZE)); i<indel_begin_pos; ++i) {
                 iri.ref_upstream += ref.get_base(i);
             }
         } else {
@@ -282,7 +282,7 @@ get_starling_indel_report_info(const indel_key& ik,
         }
         if(ik.type != INDEL::BP_LEFT) {
             iri.ref_downstream.clear();
-            for(pos_t i(indel_end_pos);i<(indel_end_pos+static_cast<pos_t>(INDEL_CONTEXT_SIZE));++i){
+            for(pos_t i(indel_end_pos); i<(indel_end_pos+static_cast<pos_t>(INDEL_CONTEXT_SIZE)); ++i) {
                 iri.ref_downstream += ref.get_base(i);
             }
         } else {
@@ -308,7 +308,7 @@ read_path_scores
 indel_lnp_to_pprob(const starling_deriv_options& dopt,
                    const read_path_scores& path_lnp,
                    const bool is_tier2_pass,
-                   const bool is_use_alt_indel){
+                   const bool is_use_alt_indel) {
 
     typedef read_path_scores::alt_indel_t::const_iterator aciter;
     typedef read_path_scores::alt_indel_t::iterator aiter;
@@ -334,7 +334,7 @@ indel_lnp_to_pprob(const starling_deriv_options& dopt,
         }
 #else
         aciter j(path_lnp.alt_indel.begin()), j_end(path_lnp.alt_indel.end());
-        for(;j!=j_end;++j){
+        for(; j!=j_end; ++j) {
             pprob.alt_indel.push_back(std::make_pair(j->first,(j->second + dopt.site_lnprior + allele_lnprior)));
         }
 #endif
@@ -349,7 +349,7 @@ indel_lnp_to_pprob(const starling_deriv_options& dopt,
         }
 #else
         aiter j(pprob.alt_indel.begin()), j_end(pprob.alt_indel.end());
-        for(;j!=j_end;++j){
+        for(; j!=j_end; ++j) {
             if(scale < j->second) scale = j->second;
         }
 #endif
@@ -365,12 +365,12 @@ indel_lnp_to_pprob(const starling_deriv_options& dopt,
         }
 #else
         aiter j(pprob.alt_indel.begin()), j_end(pprob.alt_indel.end());
-        for(;j!=j_end;++j){
+        for(; j!=j_end; ++j) {
             j->second = std::exp((j->second)-scale);
         }
 #endif
     }
-    
+
 
     double sum(pprob_nonsite+pprob.ref+pprob.indel);
     if(is_use_alt_indel) {
@@ -380,7 +380,7 @@ indel_lnp_to_pprob(const starling_deriv_options& dopt,
         }
 #else
         aciter j(pprob.alt_indel.begin()), j_end(pprob.alt_indel.end());
-        for(;j!=j_end;++j){
+        for(; j!=j_end; ++j) {
             sum += j->second;
         }
 #endif
@@ -397,7 +397,7 @@ indel_lnp_to_pprob(const starling_deriv_options& dopt,
         }
 #else
         aiter j(pprob.alt_indel.begin()), j_end(pprob.alt_indel.end());
-        for(;j!=j_end;++j){
+        for(; j!=j_end; ++j) {
             j->second /= sum;
         }
 #endif
@@ -415,7 +415,7 @@ get_starling_indel_sample_report_info(const starling_deriv_options& dopt,
                                       const pos_basecall_buffer& bc_buff,
                                       const bool is_tier2_pass,
                                       const bool is_use_alt_indel,
-                                      starling_indel_sample_report_info& isri){
+                                      starling_indel_sample_report_info& isri) {
 
     // get read info:
     {
@@ -425,12 +425,12 @@ get_starling_indel_sample_report_info(const starling_deriv_options& dopt,
 
         typedef indel_data::score_t::const_iterator siter;
         siter i(id.read_path_lnp.begin()), i_end(id.read_path_lnp.end());
-        for(;i!=i_end;++i){
+        for(; i!=i_end; ++i) {
             const read_path_scores& path_lnp(i->second);
 
             // optionally skip tier2 data:
             if((! is_tier2_pass) && (! path_lnp.is_tier1_read)) continue;
-            
+
             const read_path_scores pprob(indel_lnp_to_pprob(dopt,path_lnp,is_tier2_pass,is_use_alt_indel));
             if       (pprob.ref >= path_pprob_thresh) {
                 isri.n_q30_ref_reads++;
@@ -438,16 +438,16 @@ get_starling_indel_sample_report_info(const starling_deriv_options& dopt,
                 isri.n_q30_indel_reads++;
             } else {
                 typedef read_path_scores::alt_indel_t::const_iterator aciter;
-                
+
                 bool is_alt_found(false);
 #if 0
-                if(pprob.is_alt && (pprob.alt >= path_pprob_thresh)){
+                if(pprob.is_alt && (pprob.alt >= path_pprob_thresh)) {
                     isri.n_q30_alt_reads++;
                     is_alt_found=true;
-                }                
+                }
 #else
                 aciter j(pprob.alt_indel.begin()), j_end(pprob.alt_indel.end());
-                for(;j!=j_end;++j){
+                for(; j!=j_end; ++j) {
                     if(j->second >= path_pprob_thresh) {
                         isri.n_q30_alt_reads++;
                         is_alt_found=true;
@@ -465,7 +465,7 @@ get_starling_indel_sample_report_info(const starling_deriv_options& dopt,
         isri.n_other_reads = (n_subscore_reads+n_suboverlap_tier1_reads);
 
         if(is_tier2_pass) {
-            const unsigned n_suboverlap_tier2_reads(id.suboverlap_tier2_read_ids.size()); 
+            const unsigned n_suboverlap_tier2_reads(id.suboverlap_tier2_read_ids.size());
             isri.n_other_reads += n_suboverlap_tier2_reads;
         }
     }

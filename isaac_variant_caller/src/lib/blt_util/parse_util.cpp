@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -42,7 +42,7 @@ namespace casava {
 namespace blt_util {
 
 unsigned
-parse_unsigned(const char*& s){
+parse_unsigned(const char*& s) {
 
     static const int base(10);
 
@@ -55,7 +55,7 @@ parse_unsigned(const char*& s){
         parse_exception("unsigned long",s);
     }
 
-    if(val > std::numeric_limits<unsigned>::max()){
+    if(val > std::numeric_limits<unsigned>::max()) {
         parse_exception("unsigned",s);
     }
 
@@ -79,12 +79,12 @@ parse_unsigned_str(const std::string& s) {
 
 
 int
-parse_int(const char*& s){
+parse_int(const char*& s) {
 
     const char* endptr(s);
     const long val(parse_long(endptr));
 
-    if(val > std::numeric_limits<int>::max()){
+    if(val > std::numeric_limits<int>::max()) {
         parse_exception("int",s);
     }
 
@@ -108,7 +108,7 @@ parse_int_str(const std::string& s) {
 
 
 long
-parse_long(const char*& s){
+parse_long(const char*& s) {
 
     static const int base(10);
 
@@ -141,7 +141,7 @@ parse_long_str(const std::string& s) {
 
 
 double
-parse_double(const char*& s){
+parse_double(const char*& s) {
 
     errno = 0;
 
@@ -166,6 +166,6 @@ parse_double_str(const std::string& s) {
     }
     return val;
 }
- 
+
 }
 }

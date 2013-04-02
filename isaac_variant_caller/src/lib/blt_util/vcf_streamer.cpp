@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -36,20 +36,20 @@ static
 void
 check_vcf_header_compatability(const char* vcf_filename,
                                const ti_index_t* vh,
-                               const bam_header_t* bh){
-    
+                               const bam_header_t* bh) {
+
     assert(NULL != bh);
     assert(NULL != vh);
-    
+
     // build set of chrom labels from BAM:
     std::set<std::string> bamlabels;
-    for(int32_t i(0);i<bh->n_targets;++i) {
+    for(int32_t i(0); i<bh->n_targets; ++i) {
         bamlabels.insert(std::string(bh->target_name[i]));
     }
     int n_vcf_labels(0);
     const char** vcf_labels = ti_seqname(vh, &n_vcf_labels);
-    
-    for(int i(0);i<n_vcf_labels;++i) {
+
+    for(int i(0); i<n_vcf_labels; ++i) {
         if(bamlabels.find(std::string(vcf_labels[i])) == bamlabels.end()) {
             log_os << "ERROR: Chromosome label '" << vcf_labels[i] << "' in VCF file '" << vcf_filename << "' does not exist in the BAM header\n";
             exit(EXIT_FAILURE);
@@ -68,11 +68,11 @@ vcf_streamer(const char* filename,
     : _is_record_set(false), _is_stream_end(false), _record_no(0), _stream_name(filename),
       _tfp(NULL), _titer(NULL) {
 
-    if(NULL == filename){
+    if(NULL == filename) {
         throw blt_exception("vcf filename is null ptr");
     }
 
-    if('\0' == *filename){
+    if('\0' == *filename) {
         throw blt_exception("vcf filename is empty string");
     }
 
@@ -123,16 +123,16 @@ next(const bool is_indel_only) {
     if(_is_stream_end || (NULL==_tfp) || (NULL==_titer)) return false;
 
     do {
-    	int len;
-        const char* s = ti_read(_tfp, _titer, &len);
-	
-    	_is_stream_end=(NULL == s);
+        int len;
+        const char* vcf_record_string(ti_read(_tfp, _titer, &len));
+
+        _is_stream_end=(NULL == vcf_record_string);
         _is_record_set=(! _is_stream_end);
-        if(_is_record_set) _record_no++;
-        else break;
-        
-        if(! _vcfrec.set(s,len)) {
-            log_os << "ERROR: Can't parse vcf record: '" << s << "'\n";   
+        if(! _is_record_set) break;
+        _record_no++;
+
+        if(! _vcfrec.set(vcf_record_string)) {
+            log_os << "ERROR: Can't parse vcf record: '" << vcf_record_string << "'\n";
             exit(EXIT_FAILURE);
         }
         if(_is_record_set && is_indel_only) {
@@ -140,7 +140,7 @@ next(const bool is_indel_only) {
             const unsigned nalt(_vcfrec.alt.size());
             const bool is_rsgt1(_vcfrec.ref.size()>1);
             bool is_indel(nalt>0);
-            for(unsigned a(0);a<nalt;++a) {
+            for(unsigned a(0); a<nalt; ++a) {
                 if((!is_rsgt1) && (_vcfrec.alt[a].size() <= 1)) is_indel=false;
                 // also make sure these aren't symbolic alleles:
                 if(! is_valid_seq(_vcfrec.ref.c_str())) is_indel=false;
@@ -148,7 +148,7 @@ next(const bool is_indel_only) {
             if(is_indel) break;
         }
     } while(is_indel_only && (_is_record_set));
-    
+
     return _is_record_set;
 }
 
@@ -161,7 +161,7 @@ report_state(std::ostream& os) const {
     const vcf_record* vcfp(get_record_ptr());
 
     os << "\tvcf_stream_label: " << name() << "\n";
-    if(NULL != vcfp){
+    if(NULL != vcfp) {
         os << "\tvcf_stream_record_no: " << record_no() << "\n"
            << "\tvcf_record: " << *(vcfp) << "\n";
     } else {

@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -77,21 +77,23 @@ struct starling_options : public blt_options {
           is_realigned_read_file(false),
           is_smoothed_alignments(true),
           smoothed_lnp_range(std::log(10.))
-        , is_filter_unanchored(false)
-        , min_contig_open_end_support(0)
-        , min_contig_edge_alignment(7)
-        , min_contig_contiguous_match(14)
-        , is_write_candidate_indels_only(false)
-        , indel_nonsite_match_prob(0.25)
-        , is_tier2_indel_nonsite_match_prob(false)
-        , tier2_indel_nonsite_match_prob(0.25)
-        , is_noise_indel_filter(false)
-        , is_skip_realignment(false)
-        , is_baby_elephant(false)
-        , is_ignore_read_names(false)
-        , is_htype_calling(false)
-        , hytpe_count(2)
-        , htype_call_segment(1000)
+          , is_filter_unanchored(false)
+          , min_contig_open_end_support(0)
+          , min_contig_edge_alignment(7)
+          , min_contig_contiguous_match(14)
+          , is_write_candidate_indels_only(false)
+          , indel_nonsite_match_prob(0.25)
+          , is_tier2_indel_nonsite_match_prob(false)
+          , tier2_indel_nonsite_match_prob(0.25)
+          , is_noise_indel_filter(false)
+          , is_skip_realignment(false)
+          , is_baby_elephant(false)
+          , is_ignore_read_names(false)
+          , upstream_oligo_size(0)
+          , is_htype_calling(false)
+          , hytpe_count(2)
+          , htype_call_segment(1000)
+          , is_remap_input_softclip(false)
     {}
 
     // report whether any type of indel-caller is running (including
@@ -151,7 +153,7 @@ struct starling_options : public blt_options {
     // maximum indel size which can be represented by starling
     // (formerly a static value)
     unsigned max_indel_size;
-    
+
     // indel cannot become candidate unless at least min reads which
     // meet mapping threshold support it
     //
@@ -183,8 +185,8 @@ struct starling_options : public blt_options {
     // the maximum number of candidate re-alignments for each read:
     unsigned max_realignment_candidates;
 
-     // clip the section of a read which aligns equally well to two or
-     // more paths before pileup or realigned read output
+    // clip the section of a read which aligns equally well to two or
+    // more paths before pileup or realigned read output
     bool is_clip_ambiguous_path;
 
     bool is_realigned_read_file;
@@ -243,6 +245,9 @@ struct starling_options : public blt_options {
     // if not using grouper, you can optionally turn off the restriction that each qname occurs once in the bam:
     bool is_ignore_read_names;
 
+    // Indicates that an upstream oligo is present on reads, which can be used to increase confidence for indels near the edge of the read
+    unsigned upstream_oligo_size;
+
     // turn on haplotype based calling:
     bool is_htype_calling;
 
@@ -251,6 +256,9 @@ struct starling_options : public blt_options {
 
     // multiple of max-indel-size used for haplotyping:
     unsigned htype_call_segment;
+
+    // if true, treat all soft-clipped segments on the egdes of reads as realignable
+    bool is_remap_input_softclip;
 };
 
 

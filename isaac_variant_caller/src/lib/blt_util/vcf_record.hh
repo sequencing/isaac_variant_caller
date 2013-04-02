@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -27,24 +27,19 @@ struct vcf_record {
     vcf_record() : pos(0) { clear(); }
 
     // set record from record string s, return false on error
-    bool set(const char* s,
-             const int len);
-    
+    bool set(const char* s);
+
     void clear() {
         chrom="";
         pos=0;
         ref="";
         alt.clear();
     }
-    
+
     std::string chrom;
     int pos;
     std::string ref;
     std::vector<std::string> alt;
-
-private:
-    enum { MAX_WORD_COUNT = 6 };
-    char* _word[MAX_WORD_COUNT];
 };
 
 

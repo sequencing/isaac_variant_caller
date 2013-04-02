@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -35,18 +35,18 @@ is_overmax(const unsigned max_indel_size) const {
     // read_length+max_indel_size
     //
     if((pr.end_pos-pr.begin_pos)>
-       static_cast<pos_t>(apath_read_length(path)+max_indel_size)){
+       static_cast<pos_t>(apath_read_length(path)+max_indel_size)) {
         return true;
     }
 
     // test if any individual indel exceeds max_indel_size
     using namespace ALIGNPATH;
     const unsigned as(path.size());
-    for(unsigned i(0);i<as;++i){
+    for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(path[i]);
         if((i==0) || ((i+1)==as)) continue;
         if(((ps.type==INSERT) || (ps.type==DELETE)) &&
-           (ps.length>max_indel_size)){
+           (ps.length>max_indel_size)) {
             return true;
         }
     }
@@ -59,7 +59,7 @@ std::ostream&
 operator<<(std::ostream& os,
            const alignment& al) {
 
-    os << "ALIGNMENT pos: " << al.pos 
+    os << "ALIGNMENT pos: " << al.pos
        << " strand: " << (al.is_fwd_strand? 'F' : 'R')
        << " path: " << apath_to_cigar(al.path);
     //    if(al.is_overmax(max_indel_size)) os << " overmax";

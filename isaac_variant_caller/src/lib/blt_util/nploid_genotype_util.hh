@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -79,17 +79,17 @@ private:
 
     struct gtype_info {
         gtype_info() {
-            for(unsigned i(0);i<N_BASE;++i) efreq_levels[i]=0;
+            for(unsigned i(0); i<N_BASE; ++i) efreq_levels[i]=0;
         }
 
         gtype_info(const gtype_info& g) : label(g.label) {
-            for(unsigned i(0);i<N_BASE;++i) efreq_levels[i]=g.efreq_levels[i];
+            for(unsigned i(0); i<N_BASE; ++i) efreq_levels[i]=g.efreq_levels[i];
         }
 
         gtype_info& operator=(const gtype_info& rhs) {
             if( this == &rhs ) return *this;
             label=rhs.label;
-            for(unsigned i(0);i<N_BASE;++i) efreq_levels[i]=rhs.efreq_levels[i];
+            for(unsigned i(0); i<N_BASE; ++i) efreq_levels[i]=rhs.efreq_levels[i];
             return *this;
         }
 
@@ -98,13 +98,13 @@ private:
     };
 
     void
-    ginfo_init(const unsigned ploidy,
+    ginfo_init(const unsigned init_ploidy,
                const unsigned pli,
                const unsigned init_i,
                gtype_info& gi);
 
     void
-    ref_gtype_init(const unsigned ploidy,
+    ref_gtype_init(const unsigned init_ploidy,
                    const unsigned pli,
                    const unsigned init_i,
                    const bool is_hom,

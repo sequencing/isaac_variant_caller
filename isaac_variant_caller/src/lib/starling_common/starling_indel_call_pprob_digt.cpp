@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -56,7 +56,7 @@ double
 integrate_out_sites(const starling_deriv_options& dopt,
                     const uint16_t nsite,
                     const double p_on_site,
-                    const bool is_tier2_pass){
+                    const bool is_tier2_pass) {
 
     return log_sum((p_on_site + dopt.site_lnprior),
                    (dopt.get_nonsite_path_lnp(is_tier2_pass,nsite) + dopt.nonsite_lnprior));
@@ -80,7 +80,7 @@ get_het_observed_allele_ratio(const unsigned read_length,
                               double& log_ref_prob,
                               double& log_indel_prob) {
 
-    assert((ik.type==INDEL::INSERT) || 
+    assert((ik.type==INDEL::INSERT) ||
            (ik.type==INDEL::DELETE) ||
            (ik.type == INDEL::SWAP));
 
@@ -98,7 +98,7 @@ get_het_observed_allele_ratio(const unsigned read_length,
     const double indel_path_term(het_allele_ratio*indel_path_expect);
     const double total_path_term(ref_path_term+indel_path_term);
 
-    if(total_path_term>0){
+    if(total_path_term>0) {
         const double indel_prob(indel_path_term/total_path_term);
         log_ref_prob=std::log(1.-indel_prob);
         log_indel_prob=std::log(indel_prob);
@@ -109,7 +109,7 @@ get_het_observed_allele_ratio(const unsigned read_length,
 
 void
 indel_digt_caller::
-get_high_low_het_ratio_lhood(const starling_options& opt,
+get_high_low_het_ratio_lhood(const starling_options& /*opt*/,
                              const starling_deriv_options& dopt,
                              const starling_sample_options& sample_opt,
                              const double indel_error_lnp,
@@ -139,7 +139,7 @@ get_high_low_het_ratio_lhood(const starling_options& opt,
 
     typedef indel_data::score_t::const_iterator siter;
     siter i(id.read_path_lnp.begin()), i_end(id.read_path_lnp.end());
-    for(;i!=i_end;++i){
+    for(; i!=i_end; ++i) {
         const read_path_scores& path_lnp(i->second);
 
         // optionally skip tier2 data:
@@ -156,7 +156,7 @@ get_high_low_het_ratio_lhood(const starling_options& opt,
         if(is_use_alt_indel && (! path_lnp.alt_indel.empty()) ) {
             typedef read_path_scores::alt_indel_t::const_iterator aiter;
             aiter j(path_lnp.alt_indel.begin()), j_end(path_lnp.alt_indel.end());
-            for(;j!=j_end;++j){
+            for(; j!=j_end; ++j) {
                 if(j->second>alt_path_lnp) alt_path_lnp=j->second;
             }
         }
@@ -188,7 +188,7 @@ get_high_low_het_ratio_lhood(const starling_options& opt,
                                               ik,chet_ratio,log_ref_prob,log_indel_prob);
             }
             const double het_lnp(log_sum(noindel_lnp+log_ref_prob,hom_lnp+log_indel_prob));
-            
+
             het_lhood_high += integrate_out_sites(dopt,path_lnp.nsite,het_lnp,is_tier2_pass);
         }
     }
@@ -252,12 +252,12 @@ get_sum_path_pprob(const starling_deriv_options& dopt,
 
     typedef indel_data::score_t::const_iterator siter;
     const siter i_start(id.read_path_lnp.begin()), i_end(id.read_path_lnp.end());
-    for(siter i(i_start);i!=i_end;++i){
+    for(siter i(i_start); i!=i_end; ++i) {
         const read_path_scores& path_lnp(i->second);
 
         // optionally skip tier2 data:
         if((! is_tier2_pass) && (! path_lnp.is_tier1_read)) continue;
-        
+
         const read_path_scores path_pprob(indel_lnp_to_pprob(dopt,path_lnp,is_tier2_pass,is_use_alt_indel));
 
         total_pprob.indel += path_pprob.indel;
@@ -267,13 +267,13 @@ get_sum_path_pprob(const starling_deriv_options& dopt,
 
         typedef read_path_scores::alt_indel_t::const_iterator aciter;
         aciter j(path_pprob.alt_indel.begin()), j_end(path_pprob.alt_indel.end());
-        for(;j!=j_end;++j){
+        for(; j!=j_end; ++j) {
             aimap_t::iterator tj(alt_indel_index.find(j->first));
             if(tj==alt_indel_index.end()) {
-                 alt_indel_index[j->first]=total_pprob.alt_indel.size();
-                 total_pprob.alt_indel.push_back(*j);
+                alt_indel_index[j->first]=total_pprob.alt_indel.size();
+                total_pprob.alt_indel.push_back(*j);
             } else {
-                 total_pprob.alt_indel[tj->second].second += j->second;
+                total_pprob.alt_indel[tj->second].second += j->second;
             }
         }
     }
@@ -321,8 +321,8 @@ is_diploid_indel_noise(const starling_deriv_options& dopt,
     }
     const read_path_scores::alt_indel_t& ai(total_pprob.alt_indel);
     const int ais(ai.size());
-    for(int i(0);i<ais;++i){
-        if       (ai[i].second>max1){
+    for(int i(0); i<ais; ++i) {
+        if       (ai[i].second>max1) {
             max2=max1;
             max2_id=max1_id;
             max1=ai[i].second;
@@ -334,9 +334,9 @@ is_diploid_indel_noise(const starling_deriv_options& dopt,
     }
 
 #if 0
-std::cerr << "BUG: id: " << id;
-std::cerr << "BUG: total_pprob: " << total_pprob << "\n";
-std::cerr << "BUG: max1_id,max2_id " << max1_id << " " << max2_id << "\n";
+    std::cerr << "BUG: id: " << id;
+    std::cerr << "BUG: total_pprob: " << total_pprob << "\n";
+    std::cerr << "BUG: max1_id,max2_id " << max1_id << " " << max2_id << "\n";
 #endif
 
     // If the top two alleles are both alternate indels, check that
@@ -345,7 +345,7 @@ std::cerr << "BUG: max1_id,max2_id " << max1_id << " " << max2_id << "\n";
     // haplotype:
     //
     if(max1_id>=0 && max2_id>=0) {
-        if(! is_indel_conflict(ai[max1_id].first,ai[max2_id].first)){
+        if(! is_indel_conflict(ai[max1_id].first,ai[max2_id].first)) {
             return (total_pprob.ref>total_pprob.indel);
         }
     }
@@ -372,7 +372,7 @@ get_indel_digt_lhood(const starling_options& opt,
 
     static const double loghalf(-std::log(2.));
 
-    for(unsigned gt(0);gt<STAR_DIINDEL::SIZE;++gt) lhood[gt] = 0.;
+    for(unsigned gt(0); gt<STAR_DIINDEL::SIZE; ++gt) lhood[gt] = 0.;
 
     const bool is_breakpoint(ik.is_breakpoint());
 
@@ -384,9 +384,9 @@ get_indel_digt_lhood(const starling_options& opt,
     //    typedef read_path_scores::alt_indel_t::const_iterator aiter;
 
     typedef indel_data::score_t::const_iterator siter;
-    siter i(id.read_path_lnp.begin()), i_end(id.read_path_lnp.end());
-    for(;i!=i_end;++i){
-        const read_path_scores& path_lnp(i->second);
+    siter it(id.read_path_lnp.begin()), it_end(id.read_path_lnp.end());
+    for(; it!=it_end; ++it) {
+        const read_path_scores& path_lnp(it->second);
 
         // optionally skip tier2 data:
         if((! is_tier2_pass) && (! path_lnp.is_tier1_read)) continue;
@@ -402,7 +402,7 @@ get_indel_digt_lhood(const starling_options& opt,
         if(is_use_alt_indel and (not path_lnp.alt_indel.empty()) ) {
             typedef read_path_scores::alt_indel_t::const_iterator aiter;
             aiter j(path_lnp.alt_indel.begin()), j_end(path_lnp.alt_indel.end());
-            for(;j!=j_end;++j){
+            for(; j!=j_end; ++j) {
                 if(j->second>alt_path_lnp) alt_path_lnp=j->second;
             }
         }
@@ -439,14 +439,14 @@ get_indel_digt_lhood(const starling_options& opt,
         // loop is currently setup to assume a uniform het ratio subgenotype prior
         const unsigned n_bias_steps(1+static_cast<unsigned>(het_bias/opt.het_bias_max_ratio_inc));
         const double ratio_increment(het_bias/static_cast<double>(n_bias_steps));
-        for(unsigned i(0);i<n_bias_steps;++i) {
-            const double het_ratio(0.5+(i+1)*ratio_increment);
+        for(unsigned step(0); step<n_bias_steps; ++step) {
+            const double het_ratio(0.5+(step+1)*ratio_increment);
             increment_het_ratio_lhood(opt,dopt,sample_opt,
                                       indel_error_lnp,indel_real_lnp,
                                       ref_error_lnp,ref_real_lnp,
                                       ik,id,het_ratio,is_tier2_pass,is_use_alt_indel,lhood);
         }
-        
+
         const unsigned n_het_subgt(1+2*n_bias_steps);
         const double subgt_log_prior(std::log(static_cast<double>(n_het_subgt)));
         lhood[STAR_DIINDEL::HET] -= subgt_log_prior;
@@ -485,7 +485,7 @@ starling_indel_call_pprob_digt(const starling_options& opt,
 
     // mult by prior distro to get unnormalized pprob:
     const double* indel_lnprior(lnprior_genomic());
-    for(unsigned gt(0);gt<STAR_DIINDEL::SIZE;++gt){
+    for(unsigned gt(0); gt<STAR_DIINDEL::SIZE; ++gt) {
         dindel.pprob[gt] = lhood[gt] + indel_lnprior[gt];
     }
 

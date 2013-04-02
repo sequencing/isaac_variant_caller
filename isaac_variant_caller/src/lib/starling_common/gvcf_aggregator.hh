@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -25,7 +25,7 @@
 #include <iosfwd>
 
 struct gvcf_deriv_options {
-    
+
     gvcf_deriv_options()
         : is_max_depth(false)
         , max_depth(0)
@@ -60,7 +60,7 @@ struct gvcf_aggregator {
               const starling_diploid_indel_core& dindel,
               const starling_indel_report_info& iri,
               const starling_indel_sample_report_info& isri);
-    
+
     void
     flush() {
         skip_to_pos(_report_range.end_pos);
@@ -91,9 +91,9 @@ private:
 
     // resolve a set of overlapping indel and site calls:
     void process_overlaps();
-    
+
     void write_indel_record(const unsigned write_index=0);
-    
+
     void
     skip_to_pos(const pos_t target_pos);
 
@@ -107,7 +107,7 @@ private:
     // initial policy is to write nothing at empty sites. why?
     //
     // (1) gatk does it
-    // (2) if gVCF output is every turned off, the output would be ridiculous -- maybe this should be a gVCf only thing?
+    // (2) if gVCF output is ever turned off, the output would be ridiculous -- maybe this should be a gVCF only thing?
     //
     //void
     //write_empty_pos();
@@ -134,7 +134,7 @@ private:
 
     gvcf_block_site_record _block;
 
-    pos_t _head_pos; // we've observed sites upto but not includeing this position
+    pos_t _head_pos; // we've observed sites up to but not including this position
     site_info _empty_site;
 };
 

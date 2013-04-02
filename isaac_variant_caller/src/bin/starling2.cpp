@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -9,7 +9,6 @@
 // Software License 1 along with this program. If not, see
 // <https://github.com/downloads/sequencing/licenses/>.
 //
-
 
 /// \file
 ///
@@ -42,11 +41,11 @@ const prog_info& pinfo(starling_info::get());
 
 static
 void
-try_main(int argc,char* argv[]){
+try_main(int argc,char* argv[]) {
 
     starling_options opt;
 
-    for(int i(0);i<argc;++i){
+    for(int i(0); i<argc; ++i) {
         if(i) opt.cmdline += ' ';
         opt.cmdline += argv[i];
     }
@@ -63,7 +62,7 @@ try_main(int argc,char* argv[]){
 
         // allow remaining options to be parsed using old starling command-line parser:
         legacy_starling_args = po::collect_unrecognized(parsed.options,po::include_positional);
-        
+
     } catch(const boost::program_options::error& e) {
         pinfo.usage(e.what());
     }
@@ -79,7 +78,7 @@ try_main(int argc,char* argv[]){
     legacy_starling_arg_parse(ad,opt);
 
     finalize_starling_options(pinfo,vm,opt);
-    
+
     starling_run(opt);
 }
 
@@ -92,7 +91,7 @@ dump_cl(int argc,
         std::ostream& os) {
 
     os << "cmdline:";
-    for(int i(0);i<argc;++i){
+    for(int i(0); i<argc; ++i) {
         os << ' ' << argv[i];
     }
     os << std::endl;
@@ -101,13 +100,13 @@ dump_cl(int argc,
 
 
 int
-main(int argc,char* argv[]){
+main(int argc,char* argv[]) {
 
     std::ios_base::sync_with_stdio(false);
 
     // last chance to catch exceptions...
     //
-    try{
+    try {
         try_main(argc,argv);
 
     } catch (const blt_exception& e) {
@@ -115,8 +114,8 @@ main(int argc,char* argv[]){
                << "...caught in main()\n";
         dump_cl(argc,argv,log_os);
         exit(EXIT_FAILURE);
-    } catch (const casava::common::ExceptionData &e) {
-        log_os << "FATAL_ERROR: " << pinfo.name() << " EXCEPTION: " 
+    } catch (const casava::common::ExceptionData& e) {
+        log_os << "FATAL_ERROR: " << pinfo.name() << " EXCEPTION: "
                << e.getContext() << ": " << e.getMessage() << "\n"
                << "...caught in main()\n";
         dump_cl(argc,argv,log_os);

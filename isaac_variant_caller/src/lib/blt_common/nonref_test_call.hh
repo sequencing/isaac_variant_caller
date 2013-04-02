@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -31,9 +31,9 @@ struct nonref_test_call : private boost::noncopyable {
           max_gt(0),
           nonref_id(BASE_ID::ANY) {}
 #if 0
-          is_freq(false),
-          min_loghood(0) {
-        for(unsigned i(0);i<N_BASE;++i) allele_freq[i]=0.;
+    is_freq(false),
+    min_loghood(0) {
+        for(unsigned i(0); i<N_BASE; ++i) allele_freq[i]=0.;
     }
 #endif
 

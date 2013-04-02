@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -27,12 +27,12 @@ using namespace ALIGNPATH;
 void
 bam_cigar_to_apath(const uint32_t* bam_cigar,
                    const unsigned n_cigar,
-                   path_t& apath){
+                   path_t& apath) {
 
     // this assertion isn't really required...
     //    assert(n_cigar>0);
     apath.resize(n_cigar);
-    for(unsigned i(0);i<n_cigar;++i){
+    for(unsigned i(0); i<n_cigar; ++i) {
         apath[i].length=(bam_cigar[i]>>BAM_CIGAR_SHIFT);
         apath[i].type = static_cast<align_t>(1+(bam_cigar[i]&BAM_CIGAR_MASK));
     }
@@ -42,10 +42,10 @@ bam_cigar_to_apath(const uint32_t* bam_cigar,
 
 void
 apath_to_bam_cigar(const path_t& apath,
-                   uint32_t* bam_cigar){
+                   uint32_t* bam_cigar) {
 
     const unsigned as(apath.size());
-    for(unsigned i(0);i<as;++i){
+    for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(apath[i]);
         assert(ps.type != NONE);
         bam_cigar[i] = (ps.length<<BAM_CIGAR_SHIFT | (static_cast<uint32_t>(ps.type)-1));
@@ -56,7 +56,7 @@ apath_to_bam_cigar(const path_t& apath,
 
 void
 edit_bam_cigar(const path_t& apath,
-               bam1_t& br){
+               bam1_t& br) {
 
     bam1_core_t& bc(br.core);
 

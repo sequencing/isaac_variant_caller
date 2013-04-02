@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -31,7 +31,7 @@ struct monoploid_genotype : private boost::noncopyable {
 
     monoploid_genotype() : is_snp(false), ref_gt(0), max_gt(0), max2_gt(0) {
         static const double p(1./static_cast<double>(MONOGT::SIZE));
-        for(unsigned i(0);i<MONOGT::SIZE;++i) pprob[i] = p;
+        for(unsigned i(0); i<MONOGT::SIZE; ++i) pprob[i] = p;
     }
 
     bool is_snp;

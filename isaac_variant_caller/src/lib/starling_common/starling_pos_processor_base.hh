@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -118,12 +118,21 @@ struct starling_pos_processor_base : public pos_processor_base, private boost::n
     // returns true if this indel is novel to the buffer
     //
     bool
-    insert_indel(const indel& in,
+    insert_indel(const indel_observation& obs,
                  const unsigned sample_no);
 
     unsigned
     get_estimated_depth(const pos_t pos,
                         const unsigned sample_no) const;
+
+
+    // in range [begin,end), is the estimated depth always below
+    // depth?
+    bool
+    is_estimated_depth_range_ge_than(const pos_t begin,
+                                     const pos_t end,
+                                     const unsigned depth,
+                                     const unsigned sample_no) const;
 
     // first return value is true if the alignment is accepted into
     // the buffer (alignments can fail a number of quality checks --
@@ -203,13 +212,13 @@ protected:
 
     struct win_avgs {
 
-        win_avgs(const starling_options& opt) 
+        win_avgs(const starling_options& opt)
             : _max_winsize(0)
             , _is_last_pos(false)
             , _last_insert_pos(false) {
             const unsigned vs(opt.variant_windows.size());
             _wav.resize(vs);
-            for(unsigned i(0);i<vs;++i) {
+            for(unsigned i(0); i<vs; ++i) {
                 const unsigned winsize(1+opt.variant_windows[i].flank_size*2);
                 _wav[i].reset(new win_avg_set(winsize));
                 if(winsize>_max_winsize) _max_winsize=winsize;
@@ -232,7 +241,7 @@ protected:
         insert_null(const pos_t pos) {
             check_skipped_pos(pos);
             const unsigned ws(_wav.size());
-            for(unsigned i(0);i<ws;++i) {
+            for(unsigned i(0); i<ws; ++i) {
                 _wav[i]->ss_used_win.insert_null();
                 _wav[i]->ss_filt_win.insert_null();
                 _wav[i]->ss_spandel_win.insert_null();
@@ -242,14 +251,14 @@ protected:
 
         win_avg_set&
         get_win_avg_set(const unsigned i) { return *(_wav[i]); }
-        
+
     private:
 
         void
         check_skipped_pos(const pos_t pos) {
-            if(_is_last_pos && (pos>(_last_insert_pos+1))){
+            if(_is_last_pos && (pos>(_last_insert_pos+1))) {
                 const unsigned rep(std::min(static_cast<pos_t>(_max_winsize),(pos-(_last_insert_pos+1))));
-                for(unsigned i(0);i<rep;++i) insert_impl(0,0,0,0);
+                for(unsigned i(0); i<rep; ++i) insert_impl(0,0,0,0);
             }
             _last_insert_pos=pos;
             _is_last_pos=true;
@@ -261,7 +270,7 @@ protected:
                     const unsigned n_spandel,
                     const unsigned n_submap) {
             const unsigned ws(_wav.size());
-            for(unsigned i(0);i<ws;++i) {
+            for(unsigned i(0); i<ws; ++i) {
                 _wav[i]->ss_used_win.insert(n_used);
                 _wav[i]->ss_filt_win.insert(n_filt);
                 _wav[i]->ss_spandel_win.insert(n_spandel);
@@ -306,7 +315,7 @@ protected:
         depth_buffer estdepth_buff; // provide an early estimate of read depth before realignment.
 
         starling_sample_options sample_opt;
-        
+
         indel_synchronizer isync_default;
         indel_synchronizer* indel_sync_ptr;
 
@@ -331,7 +340,7 @@ protected:
     bool
     empty() const {
         if(! _is_skip_process_pos) {
-            for(unsigned s(0);s<_n_samples;++s) {
+            for(unsigned s(0); s<_n_samples; ++s) {
                 const sample_info& sif(sample(s));
                 if(! sif.read_buff.empty()) return false;
                 if(! sif.bc_buff.empty()) return false;
@@ -365,7 +374,7 @@ protected:
 
 private:
     bool
-    is_pos_reportable(const pos_t pos){
+    is_pos_reportable(const pos_t pos) {
         return _client_dopt.report_range_limit.is_pos_intersect(pos);
     }
 
@@ -507,7 +516,7 @@ protected:
 
     bool _is_variant_windows;
 
-    gvcf_aggregator _gvcfer;
+    std::auto_ptr<gvcf_aggregator> _gvcfer;
 
     // a caching term used for gvcf:
     site_info _site_info;

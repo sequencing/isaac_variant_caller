@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -33,14 +33,14 @@
 struct hap_cand {
 
     hap_cand(const bam_seq_base& read_seq,
-             const uint8_t* qual,
+             const uint8_t* init_qual,
              const int offset);  // the offset into read of the pileup base
 
     uint16_t
     total_qual() const { return _total_qual; }
 
     uint8_t
-    base_id(const unsigned i) const { 
+    base_id(const unsigned i) const {
         assert(i<HAP_SIZE);
         return (_bq[i] ? (_bq[i] & BASE_MASK) : BASE_ID::ANY );
     }
@@ -56,12 +56,13 @@ struct hap_cand {
         // sort the highest scores first:
         return (_total_qual > rhs._total_qual);
     }
-    
+
     enum { FLANK_SIZE = 10,
            HAP_SIZE = FLANK_SIZE*2+1,
            BASE_MASK = 0x3,
-           QUAL_SHIFT = 2};
-    
+           QUAL_SHIFT = 2
+         };
+
 private:
     uint16_t _total_qual;
     boost::array<uint8_t,HAP_SIZE> _bq;

@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -27,10 +27,10 @@ arg_data(int init_argc,
     , argstr(init_argc)
     , pinfo(init_pinfo) {
 
-    for(int i(0);i<init_argc;++i) argstr[i]=init_argv[i];
+    for(int i(0); i<init_argc; ++i) argstr[i]=init_argv[i];
 
     if(argmark.size()) argmark[0]=true;
-    for(unsigned i(0);i<argstr.size();++i){
+    for(unsigned i(0); i<argstr.size(); ++i) {
         if(i) cmdline += ' ';
         cmdline += argstr[i];
     }
@@ -47,9 +47,9 @@ arg_data(const std::vector<std::string>& arg,
 
 void
 arg_data::
-finalize_args(){
+finalize_args() {
     const unsigned as(size());
-    for(unsigned i(0);i<as;++i){
+    for(unsigned i(0); i<as; ++i) {
         if(! argmark[i]) pinfo.usage((std::string("Invalid argument: ")+argstr[i]).c_str());
     }
 }
@@ -60,7 +60,7 @@ static
 bool
 is_valid_xrange(const double val,
                 bool is_allow_zero,
-                bool is_no_max_check){
+                bool is_no_max_check) {
     return (((val > 0.) || (is_allow_zero && (val >= 0.))) && (is_no_max_check || (val <= 1.)));
 }
 
@@ -73,7 +73,7 @@ set_xrange_val(const prog_info& pinfo,
                const char* arg,
                double& val,
                bool is_allow_zero,
-               bool is_no_max_check){
+               bool is_no_max_check) {
     bool is_val_invalid(false);
     try {
         val=boost::lexical_cast<double>(arg);
@@ -96,7 +96,7 @@ set_xrange_arg(unsigned& argi,
                bool& is_val_set,
                double& val,
                bool is_allow_zero,
-               bool is_no_max_check){
+               bool is_no_max_check) {
 
     const char* arg_label(ad.argstr[argi].c_str());
 
@@ -115,7 +115,7 @@ void
 set_filename_arg(unsigned& argi,
                  arg_data& ad,
                  bool& is_val_set,
-                 std::string& file){
+                 std::string& file) {
 
     const char* arg_label(ad.argstr[argi].c_str());
 
@@ -139,7 +139,7 @@ set_win_arg(unsigned& argi,
             arg_data& ad,
             bool& is_val_set,
             int& val1,
-            unsigned& val2){
+            unsigned& val2) {
 
     const char* arg_label(ad.argstr[argi].c_str());
 
@@ -157,7 +157,7 @@ set_win_arg(unsigned& argi,
 
     int val2_tmp;
     set_val(ad.pinfo,arg_label,ad.argstr[argi].c_str(),val2_tmp);
-    if(val2_tmp<0){
+    if(val2_tmp<0) {
         ad.pinfo.usage((std::string("second argument following: ")+arg_label+" must be non-negative\n").c_str());
     }
     val2=val2_tmp;
@@ -172,7 +172,7 @@ set_nploid_arg(unsigned& argi,
                arg_data& ad,
                bool& is_val_set,
                int& val1,
-               double& val2){
+               double& val2) {
 
     const char* arg_label(ad.argstr[argi].c_str());
 
@@ -201,7 +201,7 @@ set_xrange_win_arg(unsigned& argi,
                    arg_data& ad,
                    bool& is_val_set,
                    double& val1,
-                   unsigned& val2){
+                   unsigned& val2) {
 
     const char* arg_label(ad.argstr[argi].c_str());
 
@@ -222,7 +222,7 @@ set_xrange_win_arg(unsigned& argi,
 
     int val2_tmp;
     set_val(ad.pinfo,arg_label,ad.argstr[argi].c_str(),val2_tmp);
-    if(val2_tmp<0){
+    if(val2_tmp<0) {
         ad.pinfo.usage((std::string("second argument following: ")+arg_label+" must be non-negative\n").c_str());
     }
     val2=val2_tmp;

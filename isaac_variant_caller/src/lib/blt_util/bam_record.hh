@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -34,7 +34,7 @@ struct bam_record {
         }
     }
 
-    bam_record(const bam_record& br) 
+    bam_record(const bam_record& br)
         : _bp(bam_dup1(br._bp)) {}
 
     void
@@ -146,13 +146,13 @@ public:
     //
     void
     set_readqual(const char* read,
-                 const uint8_t* qual) {
-        edit_bam_read_and_quality(read,qual,*_bp);
+                 const uint8_t* init_qual) {
+        edit_bam_read_and_quality(read,init_qual,*_bp);
     }
 
     bam1_t*
     get_data() { return _bp; }
-    
+
     const bam1_t*
     get_data() const { return _bp; }
 

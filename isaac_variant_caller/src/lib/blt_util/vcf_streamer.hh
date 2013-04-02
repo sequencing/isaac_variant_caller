@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -24,15 +24,19 @@
 
 struct vcf_streamer {
 
-    // optionally provide a BAM header to validatr vcf chromosome names against
+    // optionally provide a BAM header to validate vcf chromosome names against
     //
     explicit
     vcf_streamer(const char* filename,
                  const char* region = NULL,
                  const bam_header_t* bh = NULL);
-    
+
     ~vcf_streamer();
 
+    // advance to next vcf record
+    //
+    // is_indel_only - if set, skip all records except indels
+    //
     bool next(const bool is_indel_only=false);
 
     const vcf_record* get_record_ptr() const {

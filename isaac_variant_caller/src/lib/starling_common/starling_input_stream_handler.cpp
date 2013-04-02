@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -33,10 +33,10 @@
 
 static
 const char*
-input_type_label(const INPUT_TYPE::index_t i){
+input_type_label(const INPUT_TYPE::index_t i) {
     using namespace INPUT_TYPE;
 
-    switch(i){
+    switch(i) {
     case NONE   : return "NONE";
     case READ   : return "READ";
     case CONTIG : return "CONTIG";
@@ -53,10 +53,10 @@ void
 starling_input_stream_data::
 register_error(const char* label,
                const sample_id_t sample_no) const {
-    log_os << "ERROR: attempting to register " << label 
-           << " with sample number: " << sample_no 
+    log_os << "ERROR: attempting to register " << label
+           << " with sample number: " << sample_no
            << " more than once\n";
-    exit(EXIT_FAILURE);   
+    exit(EXIT_FAILURE);
 }
 
 
@@ -75,15 +75,15 @@ starling_input_stream_handler(const starling_input_stream_data& data,
 {
     // initial loading for _stream_queue:
     const unsigned rs(_data._reads.size());
-    for(unsigned i(0);i<rs;++i) { 
+    for(unsigned i(0); i<rs; ++i) {
         push_next(INPUT_TYPE::READ,_data._reads.get_key(i),i);
     }
     const unsigned cs(_data._contigs.size());
-    for(unsigned i(0);i<cs;++i) {
+    for(unsigned i(0); i<cs; ++i) {
         push_next(INPUT_TYPE::CONTIG,_data._contigs.get_key(i),i);
     }
     const unsigned is(_data._indels.size());
-    for(unsigned i(0);i<is;++i) {
+    for(unsigned i(0); i<is; ++i) {
         push_next(INPUT_TYPE::INDEL,_data._indels[i].first,i);
     }
 }
@@ -110,11 +110,11 @@ next() {
         bool is_usable(true);
         _current=_stream_queue.top();
         _stream_queue.pop();
-        
+
         if(_is_head_pos and
            (_current.pos < _head_pos)) {
             if(_current.itype == INPUT_TYPE::CONTIG) {
-                if((_current.pos+_contig_lead) < _head_pos){
+                if((_current.pos+_contig_lead) < _head_pos) {
                     // grouper contigs are out-of-order by a greater than expected margin:
                     const contig_reader& creader(*(_data._contigs.get_value(_current._order)));
                     log_os << "WARNING: local-assembly contig: " << creader.get_contig().id << " is too far out-of-order. skipping\n";
@@ -123,22 +123,22 @@ next() {
             } else if (_current.itype == INPUT_TYPE::READ) {
                 std::ostringstream oss;
                 oss << "ERROR: unexpected read order:\n"
-                    << "\tInput-record with pos/type/sample_no: " 
+                    << "\tInput-record with pos/type/sample_no: "
                     << (_current.pos+1) << "/" << input_type_label(_current.itype) << "/" << _current.sample_no
-                    << " follows pos/type/sample_no: " 
+                    << " follows pos/type/sample_no: "
                     << (_last.pos+1) << "/" << input_type_label(_last.itype) << "/" << _current.sample_no << "\n";
                 throw blt_exception(oss.str().c_str());
             } else if (_current.itype == INPUT_TYPE::INDEL) {
                 std::ostringstream oss;
                 oss << "ERROR: unexpected vcf record order:\n"
-                    << "\tInput-record with pos/type/sample_no: " 
+                    << "\tInput-record with pos/type/sample_no: "
                     << (_current.pos+1) << "/" << input_type_label(_current.itype) << "/" << _current.sample_no
-                    << " follows pos/type/sample_no: " 
+                    << " follows pos/type/sample_no: "
                     << (_last.pos+1) << "/" << input_type_label(_last.itype) << "/" << _current.sample_no << "\n";
                 throw blt_exception(oss.str().c_str());
             } else {
                 assert(0);
-            }	
+            }
         }
 
         if(_is_head_pos) {
@@ -159,10 +159,10 @@ static
 void
 get_next_read_pos(bool& is_next_read,
                   pos_t& next_read_pos,
-                  bam_streamer& read_stream){
+                  bam_streamer& read_stream) {
 
     is_next_read=read_stream.next();
-    if(is_next_read){
+    if(is_next_read) {
         const bam_record& read_rec(*(read_stream.get_record_ptr()));
         next_read_pos=(read_rec.pos()-1);
     } else {
@@ -182,7 +182,7 @@ static
 void
 get_next_contig_pos(bool& is_next_contig,
                     pos_t& next_contig_pos,
-                    contig_reader& creader){
+                    contig_reader& creader) {
 
     is_next_contig=creader.next();
     next_contig_pos=creader.get_contig().pos;
@@ -195,11 +195,11 @@ static
 void
 get_next_indel_pos(bool& is_next_indel,
                    pos_t& next_indel_pos,
-                   vcf_streamer& indel_stream){
+                   vcf_streamer& indel_stream) {
 
     static const bool is_indel_only(true);
     is_next_indel=indel_stream.next(is_indel_only);
-    if(is_next_indel){
+    if(is_next_indel) {
         const vcf_record& vcf_rec(*(indel_stream.get_record_ptr()));
         next_indel_pos=(vcf_rec.pos);
     } else {

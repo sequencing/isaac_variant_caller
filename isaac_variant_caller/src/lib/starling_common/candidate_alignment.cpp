@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -44,7 +44,7 @@ operator<<(std::ostream& os,
 void
 get_alignment_indels(const candidate_alignment& cal,
                      const unsigned max_indel_size,
-                     indel_set_t& indels){
+                     indel_set_t& indels) {
 
     using namespace ALIGNPATH;
 
@@ -58,7 +58,7 @@ get_alignment_indels(const candidate_alignment& cal,
     const std::pair<unsigned,unsigned> ends(get_nonclip_end_segments(cal.al.path));
     const unsigned aps(path.size());
     while(path_index<aps) {
-        
+
         const bool is_edge_segment((path_index==ends.first) || (path_index==ends.second));
         const bool is_edge_insert(is_edge_segment && (path[path_index].type == INSERT));
 
@@ -70,7 +70,7 @@ get_alignment_indels(const candidate_alignment& cal,
 
         unsigned n_seg(1); // number of path_segments consumed
         if       (is_edge_insert) {
-            if(path_index==ends.first){
+            if(path_index==ends.first) {
                 assert(cal.leading_indel_key.type != INDEL::NONE);
                 indels.insert(cal.leading_indel_key);
             } else {
@@ -93,7 +93,7 @@ get_alignment_indels(const candidate_alignment& cal,
 
         } else if(is_segment_type_indel(path[path_index].type)) {
             const path_segment& ps(path[path_index]);
-            if(ps.length <= max_indel_size){
+            if(ps.length <= max_indel_size) {
                 const INDEL::index_t id( (ps.type==INSERT) ? INDEL::INSERT : INDEL::DELETE );
                 indels.insert(indel_key(ref_head_pos,id,ps.length));
             } else {
@@ -104,6 +104,6 @@ get_alignment_indels(const candidate_alignment& cal,
 
         }
 
-        for(unsigned i(0);i<n_seg;++i) { increment_path(path,path_index,read_offset,ref_head_pos); }
+        for(unsigned i(0); i<n_seg; ++i) { increment_path(path,path_index,read_offset,ref_head_pos); }
     }
 }

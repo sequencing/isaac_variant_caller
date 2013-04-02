@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -25,13 +25,13 @@
 std::ostream& operator<<(std::ostream& os, const pos_range& pr) {
 
     os << "[";
-    if(pr.is_begin_pos){
+    if(pr.is_begin_pos) {
         os << pr.begin_pos+1;
     } else {
         os << "-inf";
     }
     os << " .. ";
-    if(pr.is_end_pos){
+    if(pr.is_end_pos) {
         os << pr.end_pos;
     } else {
         os << "inf";

@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -23,13 +23,13 @@
 /// \brief a minimal exception class
 struct blt_exception : public std::exception {
 
-  blt_exception(const char* s);
+    blt_exception(const char* s);
 
-  ~blt_exception() throw() {}
+    ~blt_exception() throw() {}
 
-  const char* what() const throw() { return message.c_str(); }
+    const char* what() const throw() { return message.c_str(); }
 
-  std::string message;
+    std::string message;
 };
 
 

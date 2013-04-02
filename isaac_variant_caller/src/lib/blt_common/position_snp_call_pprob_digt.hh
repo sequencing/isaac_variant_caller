@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -52,11 +52,11 @@ struct diploid_genotype {
             static const int qp(error_prob_to_qphred((1.-p)));
             snp_qphred=qp;
             max_gt_qphred=qp;
-            for(unsigned i(0);i<DIGT::SIZE;++i) {
+            for(unsigned i(0); i<DIGT::SIZE; ++i) {
                 pprob[i] = p;
             }
         }
-  
+
         unsigned max_gt;
         int snp_qphred;
         int max_gt_qphred;
@@ -99,7 +99,7 @@ write_diploid_genotype_snp(const blt_options& opt,
                            const snp_pos_info& pi,
                            const diploid_genotype& dgt,
                            std::ostream& os,
-                           const unsigned hpol){
+                           const unsigned hpol) {
 
     write_diploid_genotype_allele(opt,pi,dgt,os,hpol);
 }

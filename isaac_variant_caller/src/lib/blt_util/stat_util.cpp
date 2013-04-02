@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -23,7 +23,7 @@
 bool
 is_chi_sqr_reject(const double xsq,
                   const unsigned df,
-                  const double alpha){
+                  const double alpha) {
 
     assert(xsq>=0);
     assert(df>0);
@@ -44,7 +44,7 @@ bool
 is_lrt_reject_null(const double null_loghood,
                    const double alt_loghood,
                    const unsigned df,
-                   const double alpha){
+                   const double alpha) {
 
     if(df == 0) return false;
     if(null_loghood>alt_loghood) return false;

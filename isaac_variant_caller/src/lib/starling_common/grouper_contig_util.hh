@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -44,7 +44,7 @@ struct contig_reader {
         if(_is_valid) { _is_valid=get_next_contig(_is,_ctg); }
         return _is_valid;
     }
-    
+
     const grouper_contig& get_contig() const { return _ctg; }
 
 private:

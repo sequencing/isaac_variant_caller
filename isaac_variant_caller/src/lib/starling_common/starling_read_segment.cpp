@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -112,9 +112,9 @@ read_segment::
 get_segment_edge_pin() const {
     std::pair<bool,bool> res(false,false);
     const seg_id_t n_seg(sread().segment_count());
-    for(unsigned i(0);i<n_seg;++i){
+    for(unsigned i(0); i<n_seg; ++i) {
         const seg_id_t seg_id(i+1);
-        if(this==&(sread().get_segment(seg_id))){
+        if(this==&(sread().get_segment(seg_id))) {
             if(i!=0) res.first=true;
             if((i+1)!=n_seg) res.second=true;
         }
@@ -130,13 +130,13 @@ read_segment::
 is_any_nonovermax(const unsigned max_indel_size) const {
 
     const read_segment& rseg(*this);
-    if((not rseg.genome_align().empty()) and 
+    if((not rseg.genome_align().empty()) and
        (not rseg.genome_align().is_overmax(max_indel_size))) return true;
 
     typedef contig_align_t cat;
     const cat& ct(rseg.contig_align());
     cat::const_iterator i(ct.begin()),i_end(ct.end());
-    for(;i!=i_end;++i) if(not i->second.is_overmax(max_indel_size)) return true;
+    for(; i!=i_end; ++i) if(not i->second.is_overmax(max_indel_size)) return true;
     return false;
 }
 
@@ -148,7 +148,7 @@ is_valid() const {
 
     const read_segment& rseg(*this);
     const unsigned rs(rseg.read_size());
-    
+
     if(not rseg.genome_align().empty()) {
         const ALIGNPATH::path_t path(rseg.genome_align().path);
         if(is_apath_invalid(path,rs) or
@@ -158,7 +158,7 @@ is_valid() const {
     typedef contig_align_t cat;
     const cat& ct(rseg.contig_align());
     cat::const_iterator i(ct.begin()),i_end(ct.end());
-    for(;i!=i_end;++i){
+    for(; i!=i_end; ++i) {
         const ALIGNPATH::path_t path(i->second.path);
         if(is_apath_invalid(path,rs) or
            is_apath_starling_invalid(path)) return false;
@@ -199,7 +199,7 @@ operator<<(std::ostream& os,
     {
         const unsigned rs(rseg.read_size());
         const uint8_t* qual(rseg.qual());
-        for(unsigned i(0);i<rs;++i) os << static_cast<char>(qual[i]+33);
+        for(unsigned i(0); i<rs; ++i) os << static_cast<char>(qual[i]+33);
     }
     os << "\n";
 
@@ -209,7 +209,7 @@ operator<<(std::ostream& os,
         typedef contig_align_t cat;
         const cat& ct(rseg.contig_align());
         cat::const_iterator i(ct.begin()),i_end(ct.end());
-        for(;i!=i_end;++i){
+        for(; i!=i_end; ++i) {
             os << "CONTIG contig_id: " << i->first << " " << i->second;
         }
     }

@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -21,10 +21,10 @@
 
 
 std::ostream&
-operator<<(std::ostream& os, 
+operator<<(std::ostream& os,
            const bam_seq_base& bs) {
 
     const unsigned rs(bs.size());
-    for(unsigned i(0);i<rs;++i){ os << bs.get_char(i); }
+    for(unsigned i(0); i<rs; ++i) { os << bs.get_char(i); }
     return os;
 }

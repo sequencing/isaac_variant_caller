@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -15,7 +15,7 @@
 /// \author Chris Saunders
 ///
 /// note coding convention for all ranges '_pos fields' is:
-/// XXX_begin_pos is zero-indexed position at the begining of the range
+/// XXX_begin_pos is zero-indexed position at the beginning of the range
 /// XXX_end_pos is zero-index position 1 step after the end of the range
 ///
 
@@ -48,7 +48,7 @@ const prog_info& pinfo(starling_info::get());
 
 
 void
-starling_run(const starling_options& opt){
+starling_run(const starling_options& opt) {
 
     reference_contig_segment ref;
     get_starling_ref_seq(opt,ref);
@@ -89,10 +89,12 @@ starling_run(const starling_options& opt){
     // hold zero-to-many vcf streams open in indel_streams:
     typedef boost::shared_ptr<vcf_streamer> vcf_ptr;
     std::vector<vcf_ptr> indel_stream;
-    for(unsigned i(0);i<opt.input_candidate_indel_vcf.size();++i) {
+
+    const unsigned n_input_vcf(opt.input_candidate_indel_vcf.size());
+    for(unsigned i(0); i<n_input_vcf; ++i) {
         indel_stream.push_back(vcf_ptr(new vcf_streamer(opt.input_candidate_indel_vcf[i].c_str(),
                                                         bam_region.c_str(),read_stream.get_header())));
-      	sdata.register_indels(*(indel_stream.back()));
+        sdata.register_indels(*(indel_stream.back()));
     }
 
     starling_input_stream_handler sinput(sdata);
@@ -109,7 +111,7 @@ starling_run(const starling_options& opt){
         // wind sppr forward to position behind buffer head:
         sppr.set_head_pos(sinput.get_head_pos()-1);
 
-        if       (current.itype == INPUT_TYPE::READ){  // handle regular ELAND reads
+        if       (current.itype == INPUT_TYPE::READ) { // handle regular ELAND reads
 
             // Remove the filter below because it's not valid for
             // RNA-Seq case, reads should be selected for the report

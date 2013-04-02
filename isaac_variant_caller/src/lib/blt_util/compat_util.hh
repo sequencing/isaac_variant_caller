@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -24,7 +24,7 @@
 #include <string>
 
 
-#ifdef _WIN32 
+#ifdef _WIN32
 #define snprintf _snprintf
 #endif
 
@@ -37,7 +37,7 @@ const char*
 compat_basename(const char* s);
 
 
-// gets canonical name of paths *when these refere to existing items*
+// gets canonical name of paths, but only when these refer to existing items
 // returns false on error.
 bool
 compat_realpath(std::string& path);

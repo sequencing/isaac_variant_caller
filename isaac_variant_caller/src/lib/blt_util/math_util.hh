@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -28,12 +28,12 @@
 ///
 template <typename FloatType>
 FloatType
-log1p_switch(const FloatType x){
+log1p_switch(const FloatType x) {
 
     // better number??
     static const FloatType smallx_thresh(0.01);
 
-    if(std::abs(x)<smallx_thresh){
+    if(std::abs(x)<smallx_thresh) {
         return boost::math::log1p(x);
     } else {
         return std::log(1+x);
@@ -41,6 +41,8 @@ log1p_switch(const FloatType x){
 }
 
 
+/// returns equiv of log(exp(x1)+exp(x2))
+///
 template <typename FloatType>
 FloatType
 log_sum(FloatType x1, FloatType x2) {

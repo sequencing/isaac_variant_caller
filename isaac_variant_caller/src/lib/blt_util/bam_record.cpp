@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -42,7 +42,7 @@ alt_map_qual(const char* tag) const {
 
 
 
-const char* 
+const char*
 bam_record::
 get_string_tag(const char* tag) const {
 

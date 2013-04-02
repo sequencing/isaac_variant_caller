@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -41,14 +41,19 @@ register_sample(indel_buffer& ib,
 
 bool
 indel_synchronizer::
-insert_indel(const indel& in) {
-    bool is_novel(false);
+insert_indel(const indel_observation& obs) {
+
+    // first insert indel into this sample:
+    bool is_synced_sample(false);
+    bool is_repeat_obs(false);
+    const bool is_novel(ibuff(_sample_order).insert_indel(obs,is_synced_sample,is_repeat_obs));
+
+    // then insert indel into synchronized samples:
+    is_synced_sample=true;
     const unsigned isds(idata().size());
-    for(unsigned i(0);i<isds;++i) {
-        const bool is_synced_sample(i!=_sample_order);
-        if(ibuff(i).insert_indel(in,is_synced_sample)) {
-            is_novel=true;
-        }
+    for(unsigned i(0); i<isds; ++i) {
+        if (i == _sample_order) continue;
+        ibuff(i).insert_indel(obs,is_synced_sample,is_repeat_obs);
     }
     return is_novel;
 }
@@ -68,7 +73,7 @@ is_candidate_indel_int(const starling_options& opt,
     const indel_data* idsp[MAX_SAMPLE];
 
     const unsigned isds(idata().size());
-    for(unsigned i(0);i<isds;++i) {
+    for(unsigned i(0); i<isds; ++i) {
         if(i==_sample_order) {
             idsp[i] = &id;
         } else {
@@ -78,14 +83,14 @@ is_candidate_indel_int(const starling_options& opt,
     }
 
     // pre-set result to false until candidacy is shown:
-    for(unsigned i(0);i<isds;++i) {
-        idsp[i]->is_candidate_indel=false;
-        idsp[i]->is_candidate_indel_cached=true;
+    for(unsigned i(0); i<isds; ++i) {
+        idsp[i]->status.is_candidate_indel=false;
+        idsp[i]->status.is_candidate_indel_cached=true;
     }
 
     // check whether the candidate has been externally specified:
     bool is_external_candidate=false;
-    for(unsigned i(0);i<isds;++i) {
+    for(unsigned i(0); i<isds; ++i) {
         if(idsp[i]->is_external_candidate) {
             is_external_candidate=true;
             break;
@@ -93,8 +98,8 @@ is_candidate_indel_int(const starling_options& opt,
     }
 
     if(is_external_candidate) {
-        for(unsigned i(0);i<isds;++i) {
-            idsp[i]->is_candidate_indel=true;
+        for(unsigned i(0); i<isds; ++i) {
+            idsp[i]->status.is_candidate_indel=true;
         }
         return;
     }
@@ -106,7 +111,7 @@ is_candidate_indel_int(const starling_options& opt,
         bool is_min_count(false);
 
         int n_total_reads(0);
-        for(unsigned i(0);i<isds;++i) {
+        for(unsigned i(0); i<isds; ++i) {
             const int n_reads(idsp[i]->all_read_ids.size());
 
             // do the candidate reads exceed the (possibly lower than
@@ -117,10 +122,10 @@ is_candidate_indel_int(const starling_options& opt,
             }
             n_total_reads += n_reads;
         }
-        
+
         // do reads from all samples exceed the default threshold?:
         if(n_total_reads >= opt.default_min_candidate_indel_reads) is_min_count=true;
-        
+
         if(! is_min_count) return;
     }
 
@@ -137,7 +142,7 @@ is_candidate_indel_int(const starling_options& opt,
         // std::max() below
         static const unsigned one(1);
 
-        for(unsigned i(0);i<isds;++i) {
+        for(unsigned i(0); i<isds; ++i) {
             // note estdepth is based on genomic reads only, so
             // readfrac can be > 1:
             //
@@ -166,10 +171,10 @@ is_candidate_indel_int(const starling_options& opt,
     //
     {
         const double max_depth(opt.max_candidate_indel_depth);
-        for(unsigned i(0);i<isds;++i) {
+        for(unsigned i(0); i<isds; ++i) {
             const unsigned estdepth(ebuff(i).val(ik.pos-1));
             if(estdepth > max_depth) return;
-        } 
+        }
     }
 
     /////////////////////////////////////////
@@ -177,13 +182,13 @@ is_candidate_indel_int(const starling_options& opt,
     //
     {
         if(ik.is_breakpoint() &&
-           (opt.min_candidate_indel_open_length > id.seq.size())) {
+           (opt.min_candidate_indel_open_length > id.get_insert_seq().size())) {
             return;
         }
     }
 
     // made it!
-    for(unsigned i(0);i<isds;++i) {
-        idsp[i]->is_candidate_indel=true;
+    for(unsigned i(0); i<isds; ++i) {
+        idsp[i]->status.is_candidate_indel=true;
     }
 }

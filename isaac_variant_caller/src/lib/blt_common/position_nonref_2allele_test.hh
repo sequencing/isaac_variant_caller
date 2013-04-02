@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -25,25 +25,25 @@
 
 
 namespace NR2TEST {
-    enum index_t {
-        REF,             // reference allele only
-        NONREF_MF,       // reference allele mixed with single signal allele
-        NONREF_MF_NOISE, // reference allele mixed with site specific error
-        NONREF_OTHER,    // reference allele mixed with non-signal allele (lhood is approximated to 0 for this state)
-        SIZE
-    };
+enum index_t {
+    REF,             // reference allele only
+    NONREF_MF,       // reference allele mixed with single signal allele
+    NONREF_MF_NOISE, // reference allele mixed with site specific error
+    NONREF_OTHER,    // reference allele mixed with non-signal allele (lhood is approximated to 0 for this state)
+    SIZE
+};
 
-    inline
-    const char*
-    label(const index_t i) {
-        switch(i) {
-        case REF: return "ref";
-        case NONREF_MF: return "nonref";
-        case NONREF_MF_NOISE: return "noise";
-        case NONREF_OTHER: return "nonref-other";
-        default: return "xxx";
-        }
+inline
+const char*
+label(const index_t i) {
+    switch(i) {
+    case REF: return "ref";
+    case NONREF_MF: return "nonref";
+    case NONREF_MF_NOISE: return "noise";
+    case NONREF_OTHER: return "nonref-other";
+    default: return "xxx";
     }
+}
 }
 
 
@@ -54,7 +54,7 @@ namespace NR2TEST {
 ///
 /// Method is optimized to pick up low-frequency snps, but will also
 /// inevitably call higher frequency germline variation (without
-/// correct priors) if present. 
+/// correct priors) if present.
 ///
 void
 position_nonref_2allele_test(const snp_pos_info& pi,

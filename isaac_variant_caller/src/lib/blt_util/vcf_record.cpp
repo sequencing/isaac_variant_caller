@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -27,7 +27,7 @@
 
 
 struct convert {
-    void operator()(char& c) { c = toupper((unsigned char)c); }
+    void operator()(char& c) const { c = toupper((unsigned char)c); }
 };
 
 
@@ -41,16 +41,17 @@ stoupper(std::string& s) {
 
 bool
 vcf_record::
-set(const char* s,
-    const int len) {
+set(const char* s) {
 
     static const char sep('\t');
     static const unsigned maxword(5);
-    
+
+    clear();
+
     // simple tab parse:
     const char* start(s);
     const char* p(start);
-    
+
     unsigned wordindex(0);
     while(wordindex<maxword) {
         if ((*p == sep) || (*p == '\n') || (*p == '\0')) {
@@ -70,21 +71,22 @@ set(const char* s,
                 stoupper(ref);
                 break;
             case 4:
-                // addition parse loop for ',' character:
-                {
-                    const char* p2(start);
-                    while(p2<=p){
-                        if((*p2==',') || (p2==p)) {
-                            alt.push_back(std::string(start,p2-start));
-                            stoupper(alt.back());
-                            start=p2+1;
-                        }
-                        p2++;
+                // additional parse loop for ',' character:
+            {
+                const char* p2(start);
+                while(p2<=p) {
+                    if((*p2==',') || (p2==p)) {
+                        alt.push_back(std::string(start,p2-start));
+                        stoupper(alt.back());
+                        start=p2+1;
                     }
+                    p2++;
                 }
-                break;
+            }
+            break;
             default:
                 assert(0);
+                break;
             }
             start=p+1;
             wordindex++;
@@ -104,9 +106,9 @@ std::ostream& operator<<(std::ostream& os, const vcf_record& vcfr) {
        << vcfr.pos << '\t'
        << '.' << '\t'
        << vcfr.ref << '\t';
-    
+
     const unsigned nalt(vcfr.alt.size());
-    for(unsigned a(0);a<nalt;++a) {
+    for(unsigned a(0); a<nalt; ++a) {
         if(a) os << ',';
         os << vcfr.alt[a];
     }
@@ -115,7 +117,7 @@ std::ostream& operator<<(std::ostream& os, const vcf_record& vcfr) {
        << '.' << '\t'
        << '.' << '\t'
        << '.' << '\n';
-    
+
     return os;
 }
 

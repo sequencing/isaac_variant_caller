@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -29,13 +29,13 @@
 struct pos_basecall_buffer {
 
     void
-    insert_pos_submap_count(const pos_t pos){
+    insert_pos_submap_count(const pos_t pos) {
 
         _pdata[pos].n_submapped++;
     }
 
     void
-    insert_pos_spandel_count(const pos_t pos){
+    insert_pos_spandel_count(const pos_t pos) {
 
         _pdata[pos].n_spandel++;
     }
@@ -43,7 +43,7 @@ struct pos_basecall_buffer {
     void
     insert_pos_basecall(const pos_t pos,
                         const bool is_tier1,
-                        const base_call& bc){
+                        const base_call& bc) {
         if(is_tier1) {
             _pdata[pos].calls.push_back(bc);
         } else {
@@ -57,7 +57,7 @@ struct pos_basecall_buffer {
                     const bam_seq_base& read_seq,
                     const uint8_t* qual,
                     const unsigned offset) {
-        
+
         // TODO write this for multi-tier:
         assert(is_tier1);
         _pdata[pos].hap_set.push_back(hap_cand(read_seq,qual,offset));

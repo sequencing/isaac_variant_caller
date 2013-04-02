@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -51,25 +51,25 @@ bam_streamer(const char* filename,
         log_os << "ERROR: file must be in BAM format for region lookup: " << filename << "\n";
         exit(EXIT_FAILURE);
     }
-    
+
     /// TODO: Find out whether _bidx can be destroyed after the BAM
     /// iterator is created, in which case this could be a local
     /// variable. Until we know, _bidx should persist for the lifetime
     /// of _biter
-    _bidx = bam_index_load(filename); // load BAM index   
-    if (NULL == _bidx) {   
-        log_os << "ERROR: BAM index is not available for file: " << filename << "\n";   
+    _bidx = bam_index_load(filename); // load BAM index
+    if (NULL == _bidx) {
+        log_os << "ERROR: BAM index is not available for file: " << filename << "\n";
         exit(EXIT_FAILURE);
     }
-    
+
     int ref,beg,end;
     bam_parse_region(_bfp->header, region, &ref, &beg, &end); // parse the region
-    
-    if (ref < 0) {   
-        log_os << "ERROR: Invalid region: '" <<  region << "' specified for BAM file: " << filename << "\n";   
+
+    if (ref < 0) {
+        log_os << "ERROR: Invalid region: '" <<  region << "' specified for BAM file: " << filename << "\n";
         exit(EXIT_FAILURE);
-    }   
-    
+    }
+
     _biter = bam_iter_query(_bidx,ref,beg,end);
 }
 
@@ -78,7 +78,7 @@ bam_streamer(const char* filename,
 bam_streamer::
 ~bam_streamer() {
     if(NULL != _biter) bam_iter_destroy(_biter);
-    if(NULL != _bidx) bam_index_destroy(_bidx); 
+    if(NULL != _bidx) bam_index_destroy(_bidx);
     if(NULL != _bfp) samclose(_bfp);
 }
 
@@ -107,9 +107,11 @@ next() {
 const char*
 bam_streamer::
 target_id_to_name(const int32_t tid) const {
-    static const char unmapped[] = "*";
     // assert(tid < _bfp->header->n_targets);
-    if(tid<0) return unmapped;
+    if(tid<0) {
+        static const char unmapped[] = "*";
+        return unmapped;
+    }
     return _bfp->header->target_name[tid];
 }
 
@@ -133,13 +135,13 @@ report_state(std::ostream& os) const {
     if(_is_region) {
         os << "\tbam_stream_selected_region: " << _region << "\n";
     }
-    if(NULL != bamp){
+    if(NULL != bamp) {
         os << "\tbam_stream_record_no: " << record_no() << "\n";
         os << "\tbam_record QNAME/read_number: " << bamp->qname() << "/" << bamp->read_no() << "\n";
         const char* chrom_name(target_id_to_name(bamp->target_id()));
         os << "\tbam record RNAME: " << chrom_name << "\n";
         os << "\tbam record POS: " << bamp->pos() << "\n";
     } else {
-       os << "\tno bam record currently set\n";
+        os << "\tno bam record currently set\n";
     }
 }

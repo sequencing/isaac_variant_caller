@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -32,7 +32,7 @@ struct lrt_snp_call : private boost::noncopyable {
           min_test_loghood(0),
           min_loghood(0),
           snp_prob(0) {
-        for(unsigned i(0);i<N_BASE;++i) allele_freq[i]=0.;
+        for(unsigned i(0); i<N_BASE; ++i) allele_freq[i]=0.;
     }
 
     bool is_snp;

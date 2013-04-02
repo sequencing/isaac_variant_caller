@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -30,41 +30,41 @@
 
 namespace VCF_FILTERS {
 
-    enum index_t {
-        IndelConflict,
-        SiteConflict,
-        LowGQX,
-        HighBaseFilt,
-        HighDepth,
-        HighSNVSB,
-        HighSNVHPOL,
-        HighRefRep,
-        SIZE
-    };
+enum index_t {
+    IndelConflict,
+    SiteConflict,
+    LowGQX,
+    HighBaseFilt,
+    HighDepth,
+    HighSNVSB,
+    HighSNVHPOL,
+    HighRefRep,
+    SIZE
+};
 
-    inline 
-    const char*
-    get_label(const unsigned idx) {
-        switch(idx) {
-        case HighDepth: return "HighDepth";
-        case LowGQX: return "LowGQX";
-        case HighSNVSB: return "HighSNVSB";
-        case HighSNVHPOL: return "HighSNVHPOL";
-        case HighBaseFilt: return "HighDPFRatio";
-        case HighRefRep: return "HighREFREP";
-        case IndelConflict: return "IndelConflict";
-        case SiteConflict: return "SiteConflict";
-        default:
-            assert(0);
-            return NULL;
-        }
+inline
+const char*
+get_label(const unsigned idx) {
+    switch(idx) {
+    case HighDepth: return "HighDepth";
+    case LowGQX: return "LowGQX";
+    case HighSNVSB: return "HighSNVSB";
+    case HighSNVHPOL: return "HighSNVHPOL";
+    case HighBaseFilt: return "HighDPFRatio";
+    case HighRefRep: return "HighREFREP";
+    case IndelConflict: return "IndelConflict";
+    case SiteConflict: return "SiteConflict";
+    default:
+        assert(0);
+        return NULL;
     }
+}
 }
 
 
 
 struct shared_modifiers {
-    
+
     shared_modifiers() { clear(); }
 
     void
@@ -88,6 +88,8 @@ struct shared_modifiers {
 };
 
 
+std::ostream& operator<<(std::ostream& os,const shared_modifiers& shmod);
+
 
 struct indel_modifiers : public shared_modifiers {
     indel_modifiers() { clear(); }
@@ -109,25 +111,25 @@ struct indel_modifiers : public shared_modifiers {
 
 namespace MODIFIED_SITE_GT {
 
-    enum index_t {
-        NONE,
-        UNKNOWN,
-        ZERO,
-        ONE
-    };
+enum index_t {
+    NONE,
+    UNKNOWN,
+    ZERO,
+    ONE
+};
 
-    inline
-    const char*
-    get_label(const unsigned idx) {
-        switch(static_cast<index_t>(idx)) {
-        case ZERO: return "0";
-        case ONE: return "1";
-        case UNKNOWN: return ".";
-        default:
-            assert(0);
-            return NULL;
-        }
+inline
+const char*
+get_label(const unsigned idx) {
+    switch(static_cast<index_t>(idx)) {
+    case ZERO: return "0";
+    case ONE: return "1";
+    case UNKNOWN: return ".";
+    default:
+        assert(0);
+        return NULL;
     }
+}
 }
 
 
@@ -138,9 +140,12 @@ struct site_modifiers : public shared_modifiers {
     void
     clear() {
         shared_modifiers::clear();
+        is_unknown=true;
+        is_covered=false;
+        is_used_covered=false;
+        is_zero_ploidy=false;
         is_block=false;
         modified_gt=MODIFIED_SITE_GT::NONE;
-        is_zero_ploidy=false;
     }
 
     bool
@@ -170,7 +175,7 @@ struct indel_info {
          const starling_diploid_indel_core& init_dindel,
          const starling_indel_report_info& init_iri,
          const starling_indel_sample_report_info& init_isri)
-    { 
+    {
         pos=(init_pos);
         ik=(init_ik);
         dindel=(init_dindel);
@@ -190,7 +195,6 @@ struct indel_info {
     // the site ploidy within the indel at offset x
     unsigned
     get_ploidy(const unsigned offset) {
-        assert(offset>=0);
         if(! imod.is_overlap) {
             using namespace STAR_DIINDEL;
             switch(dindel.max_gt) {

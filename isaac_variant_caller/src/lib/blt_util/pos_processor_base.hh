@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -15,18 +15,19 @@
 /// \author Chris Saunders
 ///
 
-#ifndef __POS_PROCESSOR_BASE_H
-#define __POS_PROCESSOR_BASE_H
+#pragma once
 
 #include "blt_util/blt_types.hh"
 
-//
-//
-//
 
+/// \brief base for objects designed to perform work in a single pass over a position range
+///
+/// Work progress is communicated via the process_pos() method. This base class is designed to
+/// link the worker object with the stage_manager object
+///
 struct pos_processor_base {
 
-    pos_processor_base() 
+    pos_processor_base()
         : _is_skip_process_pos(false) {}
 
     virtual
@@ -34,7 +35,7 @@ struct pos_processor_base {
 
     void
     check_process_pos(const int stage_no,
-                      const pos_t pos) { 
+                      const pos_t pos) {
         if(_is_skip_process_pos) return;
         process_pos(stage_no,pos);
     }
@@ -47,6 +48,3 @@ struct pos_processor_base {
 protected:
     mutable bool _is_skip_process_pos;
 };
-
-
-#endif

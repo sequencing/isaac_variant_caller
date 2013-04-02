@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -49,15 +49,15 @@ set_export_line(char* line) {
     *p = '\0';
     _is_set=true;
 
-    if(i < SIZE){
+    if(i < SIZE) {
         _entry[i] = 0;
         std::ostringstream oss;
         oss << "ERROR:: Detected only " <<  i << " fields in export line where at least " << SIZE << " fields were expected.\n"
             << "\texport line: ";
         write_export_line(oss);
         oss << "\n";
-        throw blt_exception(oss.str().c_str());
         _is_set=false;
+        throw blt_exception(oss.str().c_str());
     }
     _entry_count=i;
 }
@@ -68,7 +68,7 @@ void
 export_line_parser::
 write_export_line(std::ostream& os) const {
 
-    for(unsigned i(0);i<SIZE;++i){
+    for(unsigned i(0); i<SIZE; ++i) {
         if(_entry[i]==0) break;
         if(i) os << '\t';
         os << _entry[i];

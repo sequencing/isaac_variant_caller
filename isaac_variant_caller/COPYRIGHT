@@ -1,5 +1,5 @@
 Isaac Variant Caller Software
-Copyright (c) 2009-2012 Illumina, Inc.
+Copyright (c) 2009-2013 Illumina, Inc.
 
 This software is provided under the terms and conditions of the
 Illumina Open Source Software License 1.
@@ -62,6 +62,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 
 ******************************************************************
+
 Boost Software License - Version 1.0 - August 17th, 2003
 
 Permission is hereby granted, free of charge, to any person or organization

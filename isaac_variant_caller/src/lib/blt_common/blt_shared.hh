@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -34,10 +34,10 @@ enum { MAX_READ_REF_DELETION_SIZE = 150 };
 
 
 namespace LOG_LEVEL {
-    enum index_t {
-        DEFAULT = 0, // 0 = errors and low-frequency warnings
-        ALLWARN = 1  // all other warnings
-    };
+enum index_t {
+    DEFAULT = 0, // 0 = errors and low-frequency warnings
+    ALLWARN = 1  // all other warnings
+};
 }
 
 
@@ -54,9 +54,9 @@ struct gvcf_options {
         , is_max_snv_sb(true)
         , max_snv_sb(10)
         , is_max_snv_hpol(true)
-        , max_snv_hpol(6)
+        , max_snv_hpol(-1)
         , is_max_ref_rep(true)
-        , max_ref_rep(8)
+        , max_ref_rep(-1)
         , block_label("BLOCKAVG_min30p3a")
         , block_frac_tol(.3)
         , block_abs_tol(3)
@@ -78,7 +78,7 @@ struct gvcf_options {
     bool is_max_snv_sb;
     double max_snv_sb;
     bool is_max_snv_hpol;
-    unsigned max_snv_hpol;
+    int max_snv_hpol;
     bool is_max_ref_rep;
     int max_ref_rep;
 
@@ -89,7 +89,7 @@ struct gvcf_options {
 
     double block_max_nonref; // what percentage of non-ref bases can a site have and still be included in a non-variant block
 };
-    
+
 
 
 
@@ -164,17 +164,17 @@ struct blt_options {
           is_min_vexp(false),
           min_vexp(0),
           verbosity(LOG_LEVEL::DEFAULT)
-        , is_write_variable_metadata(true)
-        , het_bias_inc_fudge(0.0001)
-        , het_bias_max_ratio_inc(0.05+het_bias_inc_fudge)
-        , nonref_variant_rate(0.000001)
-        , min_nonref_freq(0)
-        , nonref_site_error_rate(0.0001)
-        , nonref_site_error_decay_freq(0.01)
-        , is_eland_compat(false)
-        , is_max_input_depth(false)
-        , max_input_depth(0)
-        , is_compute_hapscore(false)
+          , is_write_variable_metadata(true)
+          , het_bias_inc_fudge(0.0001)
+          , het_bias_max_ratio_inc(0.05+het_bias_inc_fudge)
+          , nonref_variant_rate(0.000001)
+          , min_nonref_freq(0)
+          , nonref_site_error_rate(0.0001)
+          , nonref_site_error_decay_freq(0.01)
+          , is_eland_compat(false)
+          , is_max_input_depth(false)
+          , max_input_depth(0)
+          , is_compute_hapscore(false)
     {}
 
     virtual ~blt_options() {}
@@ -208,9 +208,9 @@ struct blt_options {
 
     bool
     is_tier2() const {
-        return 
+        return
             (is_tier2_min_single_align_score ||
-             is_tier2_min_paired_align_score || 
+             is_tier2_min_paired_align_score ||
              is_tier2_single_align_score_rescue_mode ||
              is_tier2_mismatch_density_filter_count ||
              is_tier2_no_mismatch_density_filter ||

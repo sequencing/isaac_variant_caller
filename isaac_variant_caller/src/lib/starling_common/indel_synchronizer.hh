@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -70,7 +70,7 @@ private:
 // samples, currently used for tumor/normal indel-calling.
 //
 // There is one indel synchronizer associated with each sample
-// (referred to as the primary sample below). The synchonizer defines
+// (referred to as the primary sample below). The synchronizer defines
 // the primary sample's synchronization policy with any other sample.
 //
 struct indel_synchronizer {
@@ -79,11 +79,11 @@ struct indel_synchronizer {
     //
     indel_synchronizer(indel_buffer& ib,
                        const depth_buffer& db,
-                       const starling_sample_options& sample_opt)
+                       const starling_sample_options& init_sample_opt)
         : _sample_no(0)
         , _sample_order(0)
     {
-        _isd.register_sample(ib,db,sample_opt,_sample_no);
+        _isd.register_sample(ib,db,init_sample_opt,_sample_no);
     }
 
     // ctor for multi-sample synced cases:
@@ -110,7 +110,7 @@ struct indel_synchronizer {
     // indel is fully inserted into the primary sample buffer, but
     // only the key is inserted into other sample buffers.
     bool
-    insert_indel(const indel& in);
+    insert_indel(const indel_observation& obs);
 
     // is an indel treated as a candidate for genotype calling and
     // realignment or as a "private" (ie. noise) indel?
@@ -120,10 +120,10 @@ struct indel_synchronizer {
                        const indel_key& ik,
                        const indel_data& id) const {
 
-        if(not id.is_candidate_indel_cached) {
+        if(not id.status.is_candidate_indel_cached) {
             is_candidate_indel_int(opt,ik,id);
         }
-        return id.is_candidate_indel;
+        return id.status.is_candidate_indel;
     }
 
     // this version is less efficient than if you have indel_data

@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -25,20 +25,20 @@
 
 
 namespace VCFID {
-    enum index_t
-    {
-        CHROM,
-        POS,
-        ID,
-        REF,
-        ALT,
-        QUAL,
-        FILT,
-        INFO,
-        FORMAT,
-        SAMPLE,
-        SIZE
-    };
+enum index_t
+{
+    CHROM,
+    POS,
+    ID,
+    REF,
+    ALT,
+    QUAL,
+    FILT,
+    INFO,
+    FORMAT,
+    SAMPLE,
+    SIZE
+};
 }
 
 
@@ -49,7 +49,6 @@ vcf_col_label() {
     static const char h[] = "#CHROM\tPOS\tID\tREF\tALT\tQUAL\tFILTER\tINFO";
     return h;
 }
-
 
 
 std::ostream&
@@ -76,18 +75,18 @@ get_format_key_index(const char* format,
 
 
 
-// return pointer to 
+// return pointer to
 //
 inline
 const char*
-get_format_string_nocopy(const char* const * word,
+get_format_string_nocopy(const char* const* word,
                          const char* key) {
 
     unsigned keynum(0);
     if(! get_format_key_index(word[VCFID::FORMAT],key,keynum)) return NULL;
 
     const char* sample(word[VCFID::SAMPLE]);
-    for(;keynum;sample++) {
+    for(; keynum; sample++) {
         if(! *sample) return NULL;
         if((*sample)==':') keynum--;
     }

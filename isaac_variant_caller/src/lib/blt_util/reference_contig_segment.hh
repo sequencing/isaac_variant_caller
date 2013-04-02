@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -25,7 +25,7 @@
 /// Manages a partial reference sequence segment
 ///
 /// This object holds the reference sequence specified by the current
-/// runs begin and end range, plus some padding on each side. To get 
+/// runs begin and end range, plus some padding on each side. To get
 /// this integrated into the current code as quickly as possible it
 /// currently exposes the internal string object holding the sequence
 /// data. When time allows this will be restricted so that a compressed
@@ -51,7 +51,7 @@ struct reference_contig_segment {
         if(pos<_offset || (pos+length)>end()) {
             //slow path (minority of calls):
             substr.clear();
-            for(int i(0);i<length;++i) {
+            for(int i(0); i<length; ++i) {
                 substr.push_back(get_base(pos+i));
             }
         } else {

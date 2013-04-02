@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -65,7 +65,7 @@ is_valid_bam_code(const uint8_t a) {
 
     switch(a) {
     case A:
-    case C: 
+    case C:
     case G:
     case T:
     case ANY: return true;
@@ -79,7 +79,7 @@ static
 bool
 is_valid_bam_seq(const bam_seq& bs) {
     const unsigned rs(bs.size());
-    for(unsigned i(0);i<rs;++i){
+    for(unsigned i(0); i<rs; ++i) {
         if(! is_valid_bam_code(bs.get_code(i))) return false;
     }
     return true;
@@ -99,8 +99,8 @@ check_bam_record(const bam_streamer& read_stream,
         read_stream.report_state(log_os);
         exit(EXIT_FAILURE);
     }
-        
-    if(rs > STARLING_MAX_READ_SIZE){
+
+    if(rs > STARLING_MAX_READ_SIZE) {
         log_os << "ERROR: maximum read size (" << STARLING_MAX_READ_SIZE << ") exceeded in input read alignment record:\n";
         read_stream.report_state(log_os);
         exit(EXIT_FAILURE);
@@ -108,7 +108,7 @@ check_bam_record(const bam_streamer& read_stream,
 
     // check that BAM read sequence contains expected characters:
     const bam_seq bseq(read.get_bam_read());
-    if(! is_valid_bam_seq(bseq)){
+    if(! is_valid_bam_seq(bseq)) {
         log_os << "ERROR: unsupported base(s) in read sequence: " << bseq << "\n";
         read_stream.report_state(log_os);
         exit(EXIT_FAILURE);
@@ -117,7 +117,7 @@ check_bam_record(const bam_streamer& read_stream,
     // check that BAM qual sequence contains quality values we can handle:
     {
         const uint8_t* qual(read.qual());
-        for(unsigned i(0);i<rs;++i) {
+        for(unsigned i(0); i<rs; ++i) {
             try {
                 qphred_cache::qscore_check(qual[i],"basecall quality");
             } catch (...) {
@@ -174,16 +174,16 @@ is_usable_read_mapping(const starling_options& opt,
         return false;
     }
 
-    if(read.is_paired()){
+    if(read.is_paired()) {
         const bool is_singleton(read.is_mate_unmapped());
         const bool is_anomalous((! is_singleton) && (! read.is_proper_pair()));
         if        ((! is_include_singleton) && is_singleton) {
             return false; // singleton
-        } else if ((! is_include_anomalous) && is_anomalous){
+        } else if ((! is_include_anomalous) && is_anomalous) {
             return false;
         }
     }
- 
+
     if(is_use_legacy_map_scores) {
         const int se_mapq(static_cast<int>(read.se_map_qual()));
 
@@ -191,22 +191,22 @@ is_usable_read_mapping(const starling_options& opt,
             const int pe_mapq(static_cast<int>(read.pe_map_qual()));
             if(pe_mapq<current_min_paired_align_score) {
                 if((! is_rescue_mode) ||
-                   (se_mapq<current_min_single_align_score)){
+                   (se_mapq<current_min_single_align_score)) {
                     return false;
                 }
             }
         }
 
-        if((! read.is_paired()) || opt.single_align_score_exclude_mode){
-            if(se_mapq<current_min_single_align_score){
+        if((! read.is_paired()) || opt.single_align_score_exclude_mode) {
+            if(se_mapq<current_min_single_align_score) {
                 return false;
             }
         }
-   
+
     } else {
         const int mapq(static_cast<int>(read.map_qual()));
-        if(read.is_paired()){
-            if (mapq < current_min_paired_align_score){
+        if(read.is_paired()) {
+            if (mapq < current_min_paired_align_score) {
                 return false; // paired submap
             }
         } else {
@@ -226,11 +226,11 @@ get_map_level(const starling_options& opt,
               const bam_record& read) {
 
     using namespace MAPLEVEL;
-    
+
     if(read.is_unmapped()) return UNMAPPED;
 
     if(is_usable_read_mapping(opt,read)) return TIER1_MAPPED;
-    if(opt.is_tier2()){
+    if(opt.is_tier2()) {
         if(is_usable_read_mapping(opt,read,true)) return TIER2_MAPPED;
     }
     return SUB_MAPPED;
@@ -252,11 +252,14 @@ is_al_overdepth(const starling_options& opt,
     pos_t ref_head_pos(al.pos);
 
     const unsigned as(al.path.size());
-    for(unsigned i(0);i<as;++i){
+    for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(al.path[i]);
         if(ps.type == MATCH) {
-            for(unsigned j(0);j<ps.length;++j) {
-                if(sppr.get_estimated_depth(ref_head_pos+static_cast<pos_t>(j),sample_no) >= opt.max_input_depth) return true;
+            if(sppr.is_estimated_depth_range_ge_than(ref_head_pos,
+                                                     ref_head_pos+static_cast<pos_t>(ps.length),
+                                                     opt.max_input_depth,
+                                                     sample_no)) {
+                return true;
             }
         }
 
@@ -279,7 +282,7 @@ process_genomic_read(const starling_options& opt,
                      const pos_t /*report_begin_pos*/,
                      starling_read_counts& brc,
                      starling_pos_processor_base& sppr,
-                     const unsigned sample_no){
+                     const unsigned sample_no) {
 
     // read filters which are *always* on, because starling/strelka
     // can't do anything sensible with this information:
@@ -293,7 +296,7 @@ process_genomic_read(const starling_options& opt,
         brc.duplicate++;
         return;
     }
-    
+
     if(read.is_unmapped()) {
         brc.unmapped++;
         return;
@@ -327,7 +330,7 @@ process_genomic_read(const starling_options& opt,
     {   //    if(is_usable_mapping or opt.is_realign_submapped_reads){ // or opt.is_realigned_read_file){
 
         // if we're seeing an unmapped read, it's still expected to
-        // have a position and chrom assignment 
+        // have a position and chrom assignment
         //
         alignment al;
         al.pos=base_pos;
@@ -337,6 +340,8 @@ process_genomic_read(const starling_options& opt,
         if(maplev != MAPLEVEL::UNMAPPED) {
             al.is_fwd_strand=read.is_fwd_strand();
             bam_cigar_to_apath(read.raw_cigar(),read.n_cigar(),al.path);
+
+            ALIGNPATH::apath_cleaner(al.path);
 
             if(read.read_size() != ALIGNPATH::apath_read_length(al.path)) {
                 const unsigned rs(read.read_size());
@@ -357,7 +362,7 @@ process_genomic_read(const starling_options& opt,
                 return;
             }
         }
-        
+
 
         const char* chrom_name(read_stream.target_id_to_name(read.target_id()));
 
@@ -380,20 +385,20 @@ process_genomic_read(const starling_options& opt,
 static
 std::pair<unsigned,unsigned>
 common_xfix_length(const std::string& s1,
-                   const std::string& s2){
+                   const std::string& s2) {
 
     const unsigned s1s(s1.size());
     const unsigned s2s(s2.size());
-	
+
     unsigned prefix(0);
     unsigned nsearch(std::min(s1s,s2s));
-    for(;prefix<nsearch;++prefix){
+    for(; prefix<nsearch; ++prefix) {
         if(s1[prefix] != s2[prefix]) break;
     }
 
     unsigned suffix(0);
     nsearch -= prefix;
-    for(;suffix<nsearch;++suffix){
+    for(; suffix<nsearch; ++suffix) {
         if(s1[s1s-1-suffix] != s2[s2s-1-suffix]) break;
     }
     return std::make_pair(prefix,suffix);
@@ -411,7 +416,7 @@ process_candidate_indel(const vcf_record& vcf_indel,
 
     const unsigned rs(vcf_indel.ref.size());
     const unsigned nalt(vcf_indel.alt.size());
-    for(unsigned a(0);a<nalt;++a) {
+    for(unsigned a(0); a<nalt; ++a) {
         const std::string& alt(vcf_indel.alt[a]);
         const unsigned as(alt.size());
         const std::pair<unsigned,unsigned> xfix(common_xfix_length(vcf_indel.ref,alt));
@@ -419,28 +424,28 @@ process_candidate_indel(const vcf_record& vcf_indel,
         assert(nfix<=std::min(rs,as));
         const int insert_length(as-nfix);
         const int delete_length(rs-nfix);
-        
-        indel in;
+
+        indel_observation obs;
         // starling indel pos is at the first changed base but zero-indexed:
-        in.key.pos = (vcf_indel.pos+xfix.first-1);
+        obs.key.pos = (vcf_indel.pos+xfix.first-1);
         if(insert_length>0) {
             if(delete_length>0) {
-                in.key.type = INDEL::SWAP;
-                in.key.swap_dlength = delete_length;
+                obs.key.type = INDEL::SWAP;
+                obs.key.swap_dlength = delete_length;
             } else {
-                in.key.type = INDEL::INSERT;
+                obs.key.type = INDEL::INSERT;
             }
-            in.key.length = insert_length;
-            in.data.seq = std::string(alt.begin()+xfix.first,alt.end()-xfix.second);
+            obs.key.length = insert_length;
+            obs.data.insert_seq = std::string(alt.begin()+xfix.first,alt.end()-xfix.second);
         } else if(delete_length>0) {
-            in.key.type = INDEL::DELETE;
-            in.key.length = delete_length;
+            obs.key.type = INDEL::DELETE;
+            obs.key.length = delete_length;
         } else {
             log_os << "ERROR: Can't parse vcf indel: '" << vcf_indel << "'\n";
             exit(EXIT_FAILURE);
         }
-        
-        in.data.is_external_candidate = true;
-        sppr.insert_indel(in,sample_no);
+
+        obs.data.is_external_candidate = true;
+        sppr.insert_indel(obs,sample_no);
     }
 }

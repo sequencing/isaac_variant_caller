@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -32,14 +32,14 @@
 
 starling_segmented_read::
 starling_segmented_read(const seg_id_t size)
-  : _seg_info(size) {}
+    : _seg_info(size) {}
 
 
 
 void
 starling_segmented_read::
 set_segment(const seg_id_t seg_no,
-            const read_segment& rseg){
+            const read_segment& rseg) {
     assert(seg_no != 0);
     _seg_info[seg_no-1] = rseg;
 }
@@ -66,16 +66,16 @@ get_segment(const seg_id_t seg_no) const {
 
 namespace READ_ALIGN {
 
-    const char*
-    label(const index_t i) {
-        switch(i) {
-        case GENOME: return "GENOME";
-        case CONTIG: return "CONTIG";
-        }
-        log_os << "ERROR: unknown READ_ALIGN index: " << i << "\n";
-        exit(EXIT_FAILURE);
-        return NULL;
+const char*
+label(const index_t i) {
+    switch(i) {
+    case GENOME: return "GENOME";
+    case CONTIG: return "CONTIG";
     }
+    log_os << "ERROR: unknown READ_ALIGN index: " << i << "\n";
+    exit(EXIT_FAILURE);
+    return NULL;
+}
 
 }
 
@@ -86,7 +86,7 @@ void
 newalign_dump(const starling_read& sr,
               const alignment& al,
               const READ_ALIGN::index_t rat,
-              const align_id_t contig_id){
+              const align_id_t contig_id) {
 
     log_os << "\tread: " << sr << "\n"
            << "\tnew-alignment: " << al << "\n"
@@ -101,7 +101,7 @@ void
 death_dump(const starling_read& sr,
            const alignment& al,
            const READ_ALIGN::index_t rat,
-           const align_id_t contig_id){
+           const align_id_t contig_id) {
 
     newalign_dump(sr,al,rat,contig_id);
     exit(EXIT_FAILURE);
@@ -181,7 +181,7 @@ static
 bool
 is_alignment_in_range(const pos_t pos,
                       const alignment& al,
-                      const unsigned max_indel_size){
+                      const unsigned max_indel_size) {
     return (std::abs(pos-get_alignment_buffer_pos(al)) <= static_cast<pos_t>(max_indel_size));
 }
 
@@ -225,7 +225,7 @@ is_compatible_alignment(const alignment& al,
         typedef contig_align_t cat;
         const cat& ct(rseg.contig_align());
         cat::const_iterator i(ct.begin()),i_end(ct.end());
-        for(;i!=i_end;++i){
+        for(; i!=i_end; ++i) {
             if(i->first == contig_id) {
                 log_os << "ERROR: multiple suggested alignments for read from same contig.\n";
                 death_dump(*this,al,rat,contig_id);
@@ -243,7 +243,7 @@ is_compatible_alignment(const alignment& al,
     typedef contig_align_t cat;
     const cat& ct(rseg.contig_align());
     cat::const_iterator i(ct.begin()),i_end(ct.end());
-    for(;i!=i_end;++i){
+    for(; i!=i_end; ++i) {
         if(! is_alignment_in_range(new_pos,i->second,opt.max_indel_size)) {
             return false;
         }
@@ -277,9 +277,9 @@ set_genome_align(const alignment& al) {
     pos_t seg_start_read_pos(read_pos);
     pos_t seg_start_ref_pos(ref_pos);
     path_t seg_path;
-    
+
     const unsigned as(al.path.size());
-    for(unsigned i(0);i<as;++i){
+    for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(al.path[i]);
         const pos_t last_read_pos(read_pos);
         if(is_segment_type_ref_length(ps.type)) ref_pos += ps.length;
@@ -303,7 +303,7 @@ set_genome_align(const alignment& al) {
             seg_start_read_pos=read_pos;
             seg_start_ref_pos=ref_pos;
             seg_path.clear();
-        } 
+        }
     }
 }
 
@@ -321,7 +321,7 @@ update_full_segment() {
 
     // first determine if anything even needs to be done:
     const unsigned n_seg(segment_count());
-    for(unsigned i(0);i<n_seg;++i) {
+    for(unsigned i(0); i<n_seg; ++i) {
         const seg_id_t seg_id(i+1);
         const read_segment& rseg(get_segment(seg_id));
         if(! rseg.is_realigned) continue;
@@ -337,7 +337,7 @@ update_full_segment() {
     alignment& fal(fullseg.realignment);
     assert(fal.empty());
     pos_t ref_pos(0);
-    for(unsigned i(0);i<n_seg;++i) {
+    for(unsigned i(0); i<n_seg; ++i) {
         using namespace ALIGNPATH;
         const seg_id_t seg_id(i+1);
         const read_segment& rseg(get_segment(seg_id));
@@ -356,7 +356,7 @@ update_full_segment() {
         }
         ref_pos=ral.pos;
         const unsigned rs(ral.path.size());
-        for(unsigned j(0);j<rs;++j) {
+        for(unsigned j(0); j<rs; ++j) {
             const path_segment& ps(ral.path[j]);
             if(is_segment_type_ref_length(ps.type)) ref_pos += ps.length;
             fal.path.push_back(ps);
@@ -393,7 +393,7 @@ write_bam(bam_dumper& bamd) {
     // just print out genomic alignment:
     if(al == rseg.genome_align()) {
         //        bamd.put_record(_read_rec._bp);
-        return; 
+        return;
     }
 
     // \TODO there should be a soft-clip for the negative position
@@ -414,7 +414,7 @@ write_bam(bam_dumper& bamd) {
     const bool is_orig_unmapped((! _is_bam_record_genomic) || _read_rec.is_unmapped());
 
     // mark mapped bit if necessary:
-    if(is_orig_unmapped){
+    if(is_orig_unmapped) {
         static const uint8_t unknown_mapq(255);
         ca.flag &= ~(BAM_FLAG::UNMAPPED);
         ca.qual=unknown_mapq;
@@ -532,7 +532,7 @@ operator<<(std::ostream& os,
     os << sr.get_full_segment();
 
     const seg_id_t sc(sr.segment_count());
-    for(unsigned i(0);i<sc;++i){
+    for(unsigned i(0); i<sc; ++i) {
         const seg_id_t seg_id(i+1);
         os << "partial_segment " << static_cast<unsigned>(seg_id) << " :\n";
         short_report(os,sr.get_segment(seg_id));

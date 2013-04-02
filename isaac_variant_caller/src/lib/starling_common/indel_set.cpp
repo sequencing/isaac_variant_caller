@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -23,8 +23,8 @@
 
 void
 dump_indel_set(const indel_set_t& is,
-               std::ostream& os){
+               std::ostream& os) {
 
-    indel_set_t::const_iterator i(is.begin()), i_end(is.end());  
-    for(;i!=i_end;++i) os << *i;
+    indel_set_t::const_iterator i(is.begin()), i_end(is.end());
+    for(; i!=i_end; ++i) os << *i;
 }

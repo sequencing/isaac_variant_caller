@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -36,7 +36,7 @@ private:
     }
 
     const char* version() const {
-        static const char VERSION[] = "2.0.2-9-g6de7c5d";
+        static const char VERSION[] = "2.0.4";
         return VERSION;
     }
 

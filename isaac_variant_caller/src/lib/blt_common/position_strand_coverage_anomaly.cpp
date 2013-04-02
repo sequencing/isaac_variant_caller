@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -22,7 +22,7 @@
 
 bool
 position_strand_coverage_anomaly(const double alpha,
-                                 const snp_pos_info& pi){
+                                 const snp_pos_info& pi) {
 
     static const double expect_binomial_p(0.5);
 
@@ -34,7 +34,7 @@ position_strand_coverage_anomaly(const double alpha,
 
     unsigned n_fwd_calls(0);
 
-    for(unsigned i(0);i<n_calls;++i){
+    for(unsigned i(0); i<n_calls; ++i) {
         if(pi.calls[i].is_fwd_strand) n_fwd_calls += 1;
     }
 

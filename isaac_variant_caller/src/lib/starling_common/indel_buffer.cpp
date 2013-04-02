@@ -1,6 +1,6 @@
 // -*- mode: c++; indent-tabs-mode: nil; -*-
 //
-// Copyright (c) 2009-2012 Illumina, Inc.
+// Copyright (c) 2009-2013 Illumina, Inc.
 //
 // This software is provided under the terms and conditions of the
 // Illumina Open Source Software License 1.
@@ -34,7 +34,7 @@ pos_range_iter(const pos_t begin_pos,
     const iterator end(_idata.lower_bound(end_range_key));
     const indel_key begin_range_key(begin_pos-static_cast<pos_t>(_max_indel_size));
     iterator begin(_idata.lower_bound(begin_range_key));
-    for(;begin!=end;++begin) {
+    for(; begin!=end; ++begin) {
         if(begin->first.right_pos() >= begin_pos) break;
     }
     return std::make_pair(begin,end);
@@ -58,7 +58,7 @@ pos_range_iter(const pos_t begin_pos,
     const const_iterator end(_idata.lower_bound(end_range_key));
     const indel_key begin_range_key(begin_pos-static_cast<pos_t>(_max_indel_size));
     const_iterator begin(_idata.lower_bound(begin_range_key));
-    for(;begin!=end;++begin) {
+    for(; begin!=end; ++begin) {
         if(begin->first.right_pos() >= begin_pos) break;
     }
     return std::make_pair(begin,end);
@@ -68,31 +68,21 @@ pos_range_iter(const pos_t begin_pos,
 
 bool
 indel_buffer::
-insert_indel(const indel& in,
-             const bool is_shared) {
+insert_indel(const indel_observation& obs,
+             const bool is_shared,
+             bool& is_repeat_obs) {
 
-    assert(in.key.type != INDEL::NONE);
-    idata_t::iterator i(_idata.find(in.key));
-    if(i == _idata.end()){
-        if(is_shared) {
-            indel_data id;
-            id.seq = in.data.seq;
-            _idata.insert(std::make_pair(in.key,id));
-        } else {
-            _idata.insert(std::make_pair(in.key,in.data));
-        }
+    assert(obs.key.type != INDEL::NONE);
+    idata_t::iterator i(_idata.find(obs.key));
+    if(i == _idata.end()) {
+        indel_data id;
+        id.add_observation(obs.data,is_shared,is_repeat_obs);
+        _idata.insert(std::make_pair(obs.key,id));
         return true;
     }
 
     indel_data& id(get_indel_data(i));
-
-    if(in.key.is_breakpoint() && 
-       (id.seq.size() < in.data.seq.size())) {
-        id.seq = in.data.seq;
-    }
-    if(! is_shared) {
-        id.add_indel_data_evidence(in.data);
-    }
+    id.add_observation(obs.data,is_shared,is_repeat_obs);
     return false;
 }
 
@@ -113,7 +103,7 @@ dump_range(indel_buffer::const_iterator i,
            const indel_buffer::const_iterator i_end,
            std::ostream& os)
 {
-    for(;i!=i_end;++i){
+    for(; i!=i_end; ++i) {
         os << i->first << get_indel_data(i);
     }
 }
