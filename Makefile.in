@@ -30,7 +30,7 @@ install: $(INSTALL_SUBDIR) build
 	rsync -a $(STAR_DIR)/src/bin/starling2 $(INSTALL_LIBEXEC_DIR)
 	$(MAKE) -C $(SRC_DIR) $@
 
-test:
+test: build
 	$(MAKE) -C $(STAR_DIR) $@
 
 build:
@@ -40,6 +40,7 @@ build:
 
 clean: srcclean
 	$(MAKE) -C $(REDIST_DIR) $@
+	$(MAKE) -C $(STAR_DIR) $@
 
 # developer targets:
 #
