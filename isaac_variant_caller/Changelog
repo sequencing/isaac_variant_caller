@@ -1,3 +1,7 @@
+v2.0.6
+Change makefile to build when cwd is not in PATH
+v2.0.5
+Associated with new parent strelka workflow release, no major chaages from v2.0.4
 v2.0.4
 - STARKA-21 Add command-line control for snv hpol filter. Set snv and indel hpol filters
 off by default.
@@ -18,7 +22,7 @@ v2.0.1
 v2.0.0
 - First RC. No changes from v2.0a3
 v2.0a3
-- Completed gVCF outptu to pass vcf-validator
+- Completed gVCF output to pass vcf-validator
 - added AD tags to snps and indels
 - added haplotypescore but left this turned off
 - added command-line controls for min-gqx,max-depth-factor and other filters/blocking thresholds

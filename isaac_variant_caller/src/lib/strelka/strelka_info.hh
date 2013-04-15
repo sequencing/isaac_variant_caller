@@ -15,37 +15,37 @@
 /// \author Chris Saunders
 ///
 
-#ifndef __STARLING_INFO_HH
-#define __STARLING_INFO_HH
+#ifndef __STRELKA_INFO_HH
+#define __STRELKA_INFO_HH
 
 #include "blt_util/prog_info.hh"
 
 
-struct starling_info : public prog_info {
+struct strelka_info : public prog_info {
 
     static
     const prog_info& get() {
-        static const starling_info vci;
+        static const strelka_info vci;
         return vci;
     }
 
 private:
     const char* name() const {
-        static const char NAME[] = "starling";
+        static const char NAME[] = "strelka";
         return NAME;
     }
 
     const char* version() const {
-        static const char VERSION[] = "2.0.6";
+        static const char VERSION[] = "${VERSION}";
         return VERSION;
     }
 
     void usage(const char* xmessage = 0) const;
 
-    void doc() const {};
+    void doc() const;
 
-    starling_info() {}
-    virtual ~starling_info() {}
+    strelka_info() {}
+    virtual ~strelka_info() {}
 };
 
 #endif

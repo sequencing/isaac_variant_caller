@@ -1,3 +1,5 @@
+v1.0.2 20130414
+- Update starling to v2.0.6: fix issue with build wnen cwd is not in PATH
 v1.0.1 20130402
 - Change to configure-based install path specification
 - Update starling to v2.0.4

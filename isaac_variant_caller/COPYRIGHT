@@ -1,4 +1,4 @@
-Isaac Variant Caller Software
+Stelka and Isaac Variant Caller Software
 Copyright (c) 2009-2013 Illumina, Inc.
 
 This software is provided under the terms and conditions of the
@@ -11,6 +11,11 @@ Software License 1 along with this program. If not, see
 The distribution includes the code libraries listed below in the
 'redist' sub-directory. These are distributed according to the
 licensing terms governing each library.
+
+
+This distribution includes the following code libraries/external
+tools and are distributed according to the licensing terms governing each 
+library.
 
 ******************************************************************
 

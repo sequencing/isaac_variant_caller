@@ -14,7 +14,7 @@ DIRS := $(foreach I,$(IDS), $(call id-to-dir,$I))
 
 LINKS := boost samtools tabix
 
-all: $(CODEMIN_ID) $(LINKS) 
+all: $(CODEMIN_ID) $(LINKS)
 
 
 $(IDS): $(DIRS)

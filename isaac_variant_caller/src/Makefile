@@ -1,11 +1,11 @@
 
 # Assumes values have been set by parent makefile:
 #
-# BOOST_ROOT : Strelka is currently tested on Boost v1.44
+# BOOST_ROOT : currently tested on Boost v1.44
 #
 # REDIST_DIR : location of other dependencies (besides boost)
 #
-# SAMTOOLS_ID : Strelka uses the samtools library for bam parsing. This is included in redist/ and should not need to be set.
+# SAMTOOLS_ID : Uses the samtools library for bam parsing. This is included in redist/ and should not need to be set.
 # TABIX_ID :
 # CODEMIN_ID : 
 #
@@ -26,8 +26,13 @@ CODEMIN_INCLUDE_DIR := $(REDIST_DIR)/$(CODEMIN_ID)/include
 CXX := g++
 BASE_WARNFLAGS := -Wall -Wextra -Wshadow -Wunused
 EXTRA_WARNFLAGS := -Wpointer-arith -Winit-self -Wredundant-decls # -Wsign-conversion -Weverything 
-INTERNAL_WARNFLAGS := -Werror
-WARNFLAGS = $(BASE_WARNFLAGS) $(EXTRA_WARNFLAGS) #$(INTERNAL_WARNFLAGS)
+WARNFLAGS = $(BASE_WARNFLAGS) $(EXTRA_WARNFLAGS)
+
+STRICT_WARNFLAGS := -Werror
+ifeq ($(STRICT_COMPILE),1)
+    WARNFLAGS += $(STRICT_WARNFLAGS)
+endif
+
 OPTFLAGS := -O2
 DEBUGFLAGS := -ggdb -O0
 XFLAGS := $(WARNFLAGS) $(OPTFLAGS)
@@ -45,9 +50,11 @@ export LDFLAGS := -L$(BOOST_LIB_DIR) -L$(SAMTOOLS_DIR) -L$(TABIX_DIR)
 export LDLIBS := -lbam -ltabix -lz 
 
 
+
+STRELKA_PROGRAM := bin/strelka2
 STARLING_PROGRAM := bin/starling2
 
-STARKA_PROGRAMS := $(STARLING_PROGRAM)
+STARKA_PROGRAMS := $(STRELKA_PROGRAM) $(STARLING_PROGRAM)
 
 
 export SHARED_CXX_DIR := starling_common common blt_common blt_util
@@ -57,6 +64,8 @@ export SHARED_CXX_LIB  := $(foreach dir,$(SHARED_CXX_DIR),$(CURDIR)/lib/$(dir)/l
 #SHARED_CXX_SRC := $(wildcard $(patsubst %,lib/%/*.cpp,$(SHARED_CXX_DIR)))
 #SHARED_OBJS := $(patsubst %.cpp,%.o,$(SHARED_CXX_SRC))
 
+STRELKA_CXX_SRC := bin/strelka2.cpp $(wildcard lib/strelka/*.cpp) $(SHARED_CXX_SRC)
+STRELKA_OBJS := $(patsubst %.cpp,%.o,$(STRELKA_CXX_SRC))
 STAR_CXX_SRC := bin/starling2.cpp $(wildcard lib/starling/*.cpp) $(SHARED_CXX_SRC)
 STAR_OBJS := $(patsubst %.cpp,%.o,$(STAR_CXX_SRC))
 
@@ -84,12 +93,13 @@ cppcheck.done: $(STARKA_PROGRAMS)
 $(STARKA_PROGRAMS): LDLIBS += -lboost_program_options
 $(STARKA_PROGRAMS): CC := $(CXX) # this fixes the linker to inlcude libc++
 
+$(STRELKA_PROGRAM): $(STRELKA_OBJS) $(SHARED_CXX_LIB)
 $(STARLING_PROGRAM): $(STAR_OBJS) $(SHARED_CXX_LIB)
 
 
 clean:
 	$(MAKE) -C lib $@
-	$(RM) $(STAR_OBJS) $(SHARED_CXX_LIB) $(STARLING_PROGRAM)
+	$(RM) $(STRELKA_OBJS) $(STAR_OBJS) $(SHARED_CXX_LIB) $(STRELKA_PROGRAM) $(STARLING_PROGRAM)
 
 
 # extra dev tags:

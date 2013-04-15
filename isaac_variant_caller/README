@@ -1,12 +1,15 @@
 
-Starling variant caller -- ${VERSION}
+Starling/Strelka variant callers -- ${VERSION}
 ---------------
 
 Chris Saunders (csaunders@illumina.com)
 
 Starling is a diploid small-variant caller for individual samples. This is also known as the Isaac Variant Caller.
 
-Note that both of this variant caller is designed to be used within the Isaac Variant Caller workflow. See the correspondig workflow for extended installation, usage and output documentation.
+Strelka is a somatic small-variant caller for matched tumor-normal samples.
+
+
+Note that both of these variant callers are designed to be used within a parent workflow method -- Isaac Variant Caller workflow and Strelka workflow, respectively. See the correspondig workflow for extended installation, usage and output documentation.
 
 
 

@@ -15,6 +15,8 @@ SRC_DIR := $(CURDIR)/src
 STAR_DIR := $(CURDIR)/isaac_variant_caller
 REDIST_DIR := $(CURDIR)/redist
 
+.PHONY: all build clean install srcclean test
+
 
 all: install test
 
@@ -31,12 +33,12 @@ install: $(INSTALL_SUBDIR) build
 	$(MAKE) -C $(SRC_DIR) $@
 
 test: build
-	$(MAKE) -C $(STAR_DIR) $@
+	STRICT_COMPILE=0 $(MAKE) -C $(STAR_DIR) $@
 
 build:
 	$(MAKE) -C $(REDIST_DIR) $@
 	$(MAKE) -C $(SRC_DIR) $@
-	$(MAKE) -C $(STAR_DIR) $@
+	STRICT_COMPILE=0 $(MAKE) -C $(STAR_DIR) $@
 
 clean: srcclean
 	$(MAKE) -C $(REDIST_DIR) $@
