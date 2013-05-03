@@ -22,6 +22,7 @@
 #include "blt_util/seq_util.hh"
 #include "starling_common/align_path.hh"
 
+#include "boost/foreach.hpp"
 #include "boost/lexical_cast.hpp"
 
 #include <cassert>
@@ -717,7 +718,7 @@ apath_cleaner(path_t& apath) {
 }
 
 
-
+#if 0
 std::pair<unsigned,unsigned>
 get_nonclip_end_segments(const path_t& apath) {
     const unsigned as(apath.size());
@@ -736,7 +737,7 @@ get_nonclip_end_segments(const path_t& apath) {
     }
     return res;
 }
-
+#endif
 
 
 pos_range
@@ -762,7 +763,7 @@ get_nonclip_range(const path_t& apath) {
 
 
 std::pair<unsigned,unsigned>
-get_match_end_segments(const path_t& apath) {
+get_match_edge_segments(const path_t& apath) {
     const unsigned as(apath.size());
     std::pair<unsigned,unsigned> res(as,as);
     bool is_first_match(false);
@@ -805,22 +806,30 @@ is_clipped(const path_t& apath) {
 
 
 bool
-is_edge_clipped(const path_t& apath) {
+is_soft_clipped(const path_t& apath) {
+    BOOST_FOREACH(const path_segment& ps, apath) {
+        if(SOFT_CLIP == ps.type) return true;
+    }
+    return false;
+}
+
+
+
+bool
+is_edge_readref_len_segment(const path_t& apath) {
     const unsigned as(apath.size());
     if(as<=0) return false;
 
-    const std::pair<unsigned,unsigned> ends(get_nonclip_end_segments(apath));
+    const std::pair<unsigned,unsigned> ends(get_match_edge_segments(apath));
 
-    // does the alignment contain any soft-clip?
-    // at this point we assume the alignment has been sanity checked for legal soft-clipping,
-    // which can only be at the edge or inside of a hard-clip segment.
+    // at this point we assume the alignment has been sanity checked for legal clipping,
+    // where hard-clip is only on the outside, next soft-clipping, then anything else...
     //
     for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(apath[i]);
-        if(ps.type == SOFT_CLIP) return true;
 
-        const bool is_edge_segment((i==ends.first) || (i==ends.second));
-        const bool is_clip_type(ps.type==INSERT);
+        const bool is_edge_segment((i<ends.first) || (i>ends.second));
+        const bool is_clip_type(ps.type==INSERT || ps.type==DELETE || ps.type==SKIP || ps.type==SOFT_CLIP);
         if(is_edge_segment && is_clip_type) return true;
     }
     return false;
@@ -863,20 +872,26 @@ is_apath_floating(const path_t& apath) {
 }
 
 
+std::string
+get_apath_invalid_reason(const path_t& apath,
+                         const unsigned seq_length) {
 
-// Take a shot at the relatively simple stuff:
-//
-// 1) clipping only occurs on the edge and hardclip must occur outside of soft-clip
-// 2) delete and skip cannot occur on edge
-//   2a) delete and skip cannot occur with only insert and clip connecting them to edge
-// 3) no unknown segments
-// 4) no repeated segments
-//      Note this might semi-legitimately occur where padding is stripped out of an alignment.
-// 5) must contain at least one match segment
-//
-bool
-is_apath_invalid(const path_t& apath,
-                 const unsigned seq_length) {
+    const ALIGN_ISSUE::issue_t ai(get_apath_invalid_type(apath,seq_length));
+
+    if(ALIGN_ISSUE::LENGTH == ai) {
+        std::ostringstream oss;
+        oss << "alignment length (" << apath_read_length(apath) << ") does not match read length (" << seq_length << ")";
+        return oss.str();
+    }
+
+    return std::string(ALIGN_ISSUE::description(ai));
+}
+
+
+
+ALIGN_ISSUE::issue_t
+get_apath_invalid_type(const path_t& apath,
+                     const unsigned seq_length) {
 
     bool is_match(false);
     align_t last_type(NONE);
@@ -884,29 +899,30 @@ is_apath_invalid(const path_t& apath,
     for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(apath[i]);
 
-        if(ps.type==NONE) return true;
-        if((i!=0) && ps.type==last_type) return true;
+        if(ps.type==NONE) return ALIGN_ISSUE::UNKNOWN_SEGMENT;
+        if((i!=0) && ps.type==last_type) return ALIGN_ISSUE::REPEATED_SEGMENT;
 
         if(! is_match) {
-            if((ps.type==DELETE) || (ps.type==SKIP)) return true;
+            //if(ps.type==DELETE) return ALIGN_ISSUE::EDGE_DELETE;
+            if(ps.type==SKIP) return ALIGN_ISSUE::EDGE_SKIP;
         }
 
         if(ps.type==HARD_CLIP) {
-            if(! ((i==0) || ((i+1)==as))) return true;
+            if(! ((i==0) || ((i+1)==as))) return ALIGN_ISSUE::CLIPPING;
         }
 
         if(ps.type==SOFT_CLIP) {
             if(! ((i==0) || ((i+1)==as))) {
                 if(i==1) {
                     if(as==3) {
-                        if((apath[0].type != HARD_CLIP) && (apath[i+1].type != HARD_CLIP)) return true;
+                        if((apath[0].type != HARD_CLIP) && (apath[i+1].type != HARD_CLIP)) return ALIGN_ISSUE::CLIPPING;
                     } else {
-                        if(apath[0].type != HARD_CLIP) return true;
+                        if(apath[0].type != HARD_CLIP) return ALIGN_ISSUE::CLIPPING;
                     }
                 } else if((i+2)==as) {
-                    if(apath[i+1].type != HARD_CLIP) return true;
+                    if(apath[i+1].type != HARD_CLIP) return ALIGN_ISSUE::CLIPPING;
                 } else {
-                    return true;
+                    return ALIGN_ISSUE::CLIPPING;
                 }
             }
         }
@@ -916,18 +932,19 @@ is_apath_invalid(const path_t& apath,
         last_type=ps.type;
     }
 
-    if(! is_match) return true;
+    if(! is_match) return ALIGN_ISSUE::FLOATING;
 
     // run in reverse to finish checking condition (2a):
     for(unsigned i(0); i<as; ++i) {
         const path_segment& ps(apath[as-(i+1)]);
         if(ps.type==MATCH) break;
-        if((ps.type==DELETE) || (ps.type==SKIP)) return true;
+        //if(ps.type==DELETE) return ALIGN_ISSUE::EDGE_DELETE;
+        if(ps.type==SKIP) return ALIGN_ISSUE::EDGE_SKIP;
     }
 
-    if(seq_length != apath_read_length(apath)) return true;
+    if(seq_length != apath_read_length(apath)) return ALIGN_ISSUE::LENGTH;
 
-    return false;
+    return ALIGN_ISSUE::NONE;
 }
 
 

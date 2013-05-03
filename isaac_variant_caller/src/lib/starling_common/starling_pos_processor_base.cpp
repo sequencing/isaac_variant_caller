@@ -621,8 +621,10 @@ insert_read(const bam_record& br,
         static const INDEL_ALIGN_TYPE::index_t iat(INDEL_ALIGN_TYPE::CONTIG_READ);
         const bam_seq bseq(br.get_bam_read());
         try {
+            static const std::pair<bool,bool> edge_pin(std::make_pair(false,false));
             add_alignment_indels_to_sppr(_client_opt.max_indel_size,_ref,
-                                         al,bseq,*this,iat,res.second,sample_no,contig_indels_ptr);
+                                         al,bseq,*this,iat,res.second,sample_no,
+                                         edge_pin,contig_indels_ptr);
         } catch (...) {
             log_os << "\nException caught in add_alignment_indels_to_sppr() while processing record: " << read_key(br) << "\n";
             throw;
@@ -709,7 +711,7 @@ init_read_segment(const read_segment& rseg,
     const bam_seq bseq(rseg.get_bam_read());
     try {
         add_alignment_indels_to_sppr(_client_opt.max_indel_size,_ref,
-                                     al,bseq,*this,iat,rseg.id(),sample_no);
+                                     al,bseq,*this,iat,rseg.id(),sample_no,rseg.get_segment_edge_pin());
     } catch (...) {
         log_os << "\nException caught in add_alignment_indels_to_sppr() while processing record: " << rseg.key() << "\n";
         throw;
@@ -1338,6 +1340,11 @@ pileup_read_segment(const read_segment& rseg,
         }
     }
 
+    // info used to determine filter certain deletions, as follows:
+    // any edge deletion is thrown away, unless it is next to an exon
+    const std::pair<bool,bool> edge_pins(rseg.get_segment_edge_pin());
+    const std::pair<unsigned,unsigned> edge_ends(ALIGNPATH::get_match_edge_segments(best_al.path));
+
     // alignment walkthough:
     pos_t ref_head_pos(best_al.pos);
     unsigned read_head_pos(0);
@@ -1423,16 +1430,21 @@ pileup_read_segment(const read_segment& rseg,
                            << "while processing read_position: " << (read_pos+1) << "\n";
                     throw;
                 }
-
             }
-        } else if(ps.type==DELETE) {
-            for(unsigned j(0); j<ps.length; ++j) {
-                const pos_t ref_pos(ref_head_pos+static_cast<pos_t>(j));
 
-                if(is_submapped) {
-                    insert_pos_submap_count(ref_pos,sample_no);
-                } else {
-                    insert_pos_spandel_count(ref_pos,sample_no);
+        } else if(ps.type==DELETE) {
+            const bool is_edge_deletion((i<edge_ends.first)  || (i>edge_ends.second));
+            const bool is_pinned_deletion(((i<edge_ends.first) && (edge_pins.first)) ||
+                                          ((i>edge_ends.second) && (edge_pins.second)));
+            if((! is_edge_deletion) || is_pinned_deletion) {
+                for(unsigned j(0); j<ps.length; ++j) {
+                    const pos_t ref_pos(ref_head_pos+static_cast<pos_t>(j));
+
+                    if(is_submapped) {
+                        insert_pos_submap_count(ref_pos,sample_no);
+                    } else {
+                        insert_pos_spandel_count(ref_pos,sample_no);
+                    }
                 }
             }
         }

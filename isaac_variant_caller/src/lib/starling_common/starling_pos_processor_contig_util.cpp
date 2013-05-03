@@ -28,6 +28,7 @@
 #include "starling_common/grouper_contig_util.hh"
 #include "starling_common/starling_pos_processor_contig_util.hh"
 
+#include "boost/foreach.hpp"
 #include "boost/scoped_array.hpp"
 
 
@@ -74,7 +75,7 @@ test_contig_usability(const starling_options& opt,
     if(opt.min_contig_edge_alignment) {
         bool is_skip(false);
         const unsigned aps(ctg.path.size());
-        const std::pair<unsigned,unsigned> res(get_match_end_segments(ctg.path));
+        const std::pair<unsigned,unsigned> res(get_match_edge_segments(ctg.path));
         assert((aps != res.first) && (aps != res.second));
         if((ctg.path[res.first].length < opt.min_contig_edge_alignment) ||
            (ctg.path[res.second].length < opt.min_contig_edge_alignment)) {
@@ -97,9 +98,7 @@ test_contig_usability(const starling_options& opt,
         using namespace ALIGNPATH;
 
         bool is_skip(true);
-        const unsigned aps(ctg.path.size());
-        for(unsigned i(0); i<aps; ++i) {
-            const path_segment& ps(ctg.path[i]);
+        BOOST_FOREACH(const path_segment& ps, ctg.path) {
             if((MATCH == ps.type) &&
                (opt.min_contig_contiguous_match <= ps.length)) {
                 is_skip=false;
@@ -480,7 +479,8 @@ process_contig(const starling_options& client_opt,
     static const INDEL_ALIGN_TYPE::index_t iat(INDEL_ALIGN_TYPE::CONTIG);
     const string_bam_seq bseq(ctg.seq);
     try {
-        add_alignment_indels_to_sppr(client_opt.max_indel_size,ref,ctg,bseq,sppr,iat,contig_no,sample_no);
+        static const std::pair<bool,bool> edge_pin(std::make_pair(false,false));
+        add_alignment_indels_to_sppr(client_opt.max_indel_size,ref,ctg,bseq,sppr,iat,contig_no,sample_no, edge_pin);
     } catch (...) {
         log_os << "\nException caught in add_alignment_indels_to_sppr() while processing contig";
         if(NULL != sample_label) log_os << " from sample '" << sample_label << "'";

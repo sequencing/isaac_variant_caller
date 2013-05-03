@@ -36,7 +36,7 @@ private:
     }
 
     const char* version() const {
-        static const char VERSION[] = "2.0.6";
+        static const char VERSION[] = "2.0.7";
         return VERSION;
     }
 

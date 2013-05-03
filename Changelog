@@ -1,3 +1,6 @@
+v1.0.3 20130502
+- Update starling to v2.0.7, fix gVCF filters across deletions, handle indels
+on alignmnet edges
 v1.0.2 20130414
 - Update starling to v2.0.6: fix issue with build wnen cwd is not in PATH
 v1.0.1 20130402

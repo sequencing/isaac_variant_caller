@@ -20,10 +20,21 @@
 #include "starling_common/gvcf_aggregator.hh"
 #include "starling_common/gvcf_header.hh"
 
+#include "boost/foreach.hpp"
+
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+
+
+//#define DEBUG_GVCF
+
+
+#ifdef DEBUG_GVCF
+#include "blt_util/log.hh"
+#endif
+
 
 
 static
@@ -172,9 +183,13 @@ skip_to_pos(const pos_t target_pos) {
         // only add one empty site after completing any pre-existing indel blocks,
         // then extend the block size of that one site as required:
         if(0 != _indel_buffer_size) continue;
-        assert(_block.count!=0);
-        _block.count += (target_pos-_head_pos);
-        _head_pos=target_pos;
+        if(_opt.gvcf.is_block_compression) {
+            assert(_block.count!=0);
+            _block.count += (target_pos-_head_pos);
+            _head_pos=target_pos;
+        } else {
+            _head_pos++;
+        }
     }
 }
 
@@ -198,6 +213,7 @@ add_site_internal(const site_info& si) {
 
     _head_pos=si.pos+1;
 
+    // resolve any current or previous indels before queue-ing site:
     if(0 != _indel_buffer_size) {
         if(si.pos>=_indel_end_pos) {
             process_overlaps();
@@ -248,7 +264,7 @@ add_indel(const pos_t pos,
 
     // check if an indel is already buffered and we done't overlap it,
     // in which case we need to clear it first -- note this definition
-    // of overlap deleberatly picks up adjacent deletions:
+    // of overlap deliberately picks up adjacent deletions:
     if((0 != _indel_buffer_size) && (pos>_indel_end_pos)) {
         process_overlaps();
     }
@@ -306,10 +322,8 @@ add_cigar_to_ploidy(const ALIGNPATH::path_t& apath,
                     std::vector<unsigned>& ploidy) {
 
     using namespace ALIGNPATH;
-    const unsigned as(apath.size());
     int offset(-1);
-    for(unsigned i(0); i<as; ++i) {
-        const path_segment& ps(apath[i]);
+    BOOST_FOREACH(const path_segment& ps, apath) {
         if(ps.type==MATCH) {
             for(unsigned j(0); j<ps.length; ++j) {
                 if(offset>=0) ploidy[offset]++;
@@ -366,6 +380,8 @@ static
 bool
 is_site_record_blockable(const gvcf_options& opt,
                          const site_info& si) {
+
+    if(! opt.is_block_compression) return false;
 
     if(si.dgt.is_snp) return false;
 
@@ -563,8 +579,17 @@ modify_indel_overlap_site(const gvcf_options& opt,
                           const unsigned ploidy,
                           site_info& si) {
 
+#ifdef DEBUG_GVCF
+   log_os << "CHIRP: indel_overlap_site smod before: " << si.smod << "\n";
+   log_os << "CHIRP: indel_overlap_site imod before: " << ii.imod << "\n";
+#endif
+
     // inherit any filters from the indel:
-    si.smod.filters &= ii.imod.filters;
+    si.smod.filters |= ii.imod.filters;
+
+#ifdef DEBUG_GVCF
+   log_os << "CHIRP: indel_overlap_site smod after: " << si.smod << "\n";
+#endif
 
     // limit qual and gq values to those of the indel
     si.dgt.genome.snp_qphred = std::min(si.dgt.genome.snp_qphred,ii.dindel.indel_qphred);
@@ -812,6 +837,9 @@ process_overlaps() {
 
     // process sites to be consistent with overlapping indels:
     for(unsigned i(0); i<_site_buffer_size; ++i) {
+#ifdef DEBUG_GVCF
+        log_os << "CHIRP: indel overlapping site: " << _site_buffer[i].pos << "\n";
+#endif
         const pos_t offset(_site_buffer[i].pos-_indel_buffer[0].pos);
         assert(offset>=0);
         if(! is_conflict_print) {

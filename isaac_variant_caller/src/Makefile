@@ -51,31 +51,28 @@ export LDLIBS := -lbam -ltabix -lz
 
 
 
-STRELKA_PROGRAM := bin/strelka2
+STRELKA_PROGRAMS := bin/strelka2 bin/strelkaSiteSimulator
 STARLING_PROGRAM := bin/starling2
 
-STARKA_PROGRAMS := $(STRELKA_PROGRAM) $(STARLING_PROGRAM)
+STARKA_PROGRAMS := $(STRELKA_PROGRAMS) $(STARLING_PROGRAM)
 
 
 export SHARED_CXX_DIR := starling_common common blt_common blt_util
-SHARED_CXX_PATH := $(patsubst %,$(CURDIR)/lib/%,$(SHARED_CXX_DIR))
 export SHARED_CXX_LIB  := $(foreach dir,$(SHARED_CXX_DIR),$(CURDIR)/lib/$(dir)/lib$(dir).a)
 
-#SHARED_CXX_SRC := $(wildcard $(patsubst %,lib/%/*.cpp,$(SHARED_CXX_DIR)))
-#SHARED_OBJS := $(patsubst %.cpp,%.o,$(SHARED_CXX_SRC))
-
-STRELKA_CXX_SRC := bin/strelka2.cpp $(wildcard lib/strelka/*.cpp) $(SHARED_CXX_SRC)
-STRELKA_OBJS := $(patsubst %.cpp,%.o,$(STRELKA_CXX_SRC))
-STAR_CXX_SRC := bin/starling2.cpp $(wildcard lib/starling/*.cpp) $(SHARED_CXX_SRC)
-STAR_OBJS := $(patsubst %.cpp,%.o,$(STAR_CXX_SRC))
+STRELKA_OBJS := $(patsubst %.cpp,%.o, $(wildcard lib/strelka/*.cpp))
+STAR_OBJS := $(patsubst %.cpp,%.o, $(wildcard lib/starling/*.cpp))
 
 
 .PHONY: all build clean install test
 
+# not really phony, but we want to force a check of whether source files are newer than lib:
+.PHONY: $(SHARED_CXX_LIB)
+
 
 all: build
 
-build: cppcheck.done $(STARKA_PROGRAMS)
+build: $(STARKA_PROGRAMS)
 
 $(SHARED_CXX_LIB) :
 	$(MAKE) -C $(dir $@) $(notdir $@)
@@ -83,23 +80,23 @@ $(SHARED_CXX_LIB) :
 install: build
 	cp $(STARKA_PROGRAMS) $(BIN_DIR)
 
-test: build
+test: build cppcheck.done
 	$(MAKE) -C lib $@
 
 cppcheck.done: $(STARKA_PROGRAMS)
-	@echo "Runnning cppcheck" && \
+	@echo "Running cppcheck" && \
 	$(CURDIR)/run_cppcheck.bash
 
 $(STARKA_PROGRAMS): LDLIBS += -lboost_program_options
 $(STARKA_PROGRAMS): CC := $(CXX) # this fixes the linker to inlcude libc++
 
-$(STRELKA_PROGRAM): $(STRELKA_OBJS) $(SHARED_CXX_LIB)
-$(STARLING_PROGRAM): $(STAR_OBJS) $(SHARED_CXX_LIB)
+$(STRELKA_PROGRAMS): % : %.o $(STRELKA_OBJS) $(SHARED_CXX_LIB)
+$(STARLING_PROGRAM): % : %.o $(STAR_OBJS) $(SHARED_CXX_LIB)
 
 
 clean:
 	$(MAKE) -C lib $@
-	$(RM) $(STRELKA_OBJS) $(STAR_OBJS) $(SHARED_CXX_LIB) $(STRELKA_PROGRAM) $(STARLING_PROGRAM)
+	$(RM) $(STRELKA_OBJS) $(STAR_OBJS) $(SHARED_CXX_LIB) $(STARKA_PROGRAMS)
 
 
 # extra dev tags:

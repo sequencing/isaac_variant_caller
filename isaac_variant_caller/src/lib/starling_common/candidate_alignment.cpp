@@ -55,27 +55,27 @@ get_alignment_indels(const candidate_alignment& cal,
     unsigned read_offset(0);
     pos_t ref_head_pos(cal.al.pos);
 
-    const std::pair<unsigned,unsigned> ends(get_nonclip_end_segments(cal.al.path));
+    const std::pair<unsigned,unsigned> ends(get_match_edge_segments(cal.al.path));
     const unsigned aps(path.size());
     while(path_index<aps) {
 
-        const bool is_edge_segment((path_index==ends.first) || (path_index==ends.second));
-        const bool is_edge_insert(is_edge_segment && (path[path_index].type == INSERT));
-
+        const bool is_edge_segment((path_index<ends.first) || (path_index>ends.second));
         const bool is_swap_start(is_segment_swap_start(path,path_index));
 
         assert(! (path[path_index].type == SKIP));
-        assert(! (is_edge_segment && (path[path_index].type == DELETE)));
-        assert(! (is_edge_insert && is_swap_start));
+        assert(! (is_edge_segment && is_swap_start));
 
         unsigned n_seg(1); // number of path_segments consumed
-        if       (is_edge_insert) {
-            if(path_index==ends.first) {
-                assert(cal.leading_indel_key.type != INDEL::NONE);
-                indels.insert(cal.leading_indel_key);
-            } else {
-                assert(cal.trailing_indel_key.type != INDEL::NONE);
-                indels.insert(cal.trailing_indel_key);
+        if       (is_edge_segment) {
+            // ignore all edge segments except INSERT and DELETE:
+            if((DELETE == path[path_index].type) || (INSERT == path[path_index].type)) {
+                if(path_index<ends.first) {
+                    assert(cal.leading_indel_key.type != INDEL::NONE);
+                    indels.insert(cal.leading_indel_key);
+                } else {
+                    assert(cal.trailing_indel_key.type != INDEL::NONE);
+                    indels.insert(cal.trailing_indel_key);
+                }
             }
 
         } else if(is_swap_start) {
