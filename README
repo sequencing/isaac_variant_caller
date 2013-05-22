@@ -1,4 +1,3 @@
-
 Isaac Variant Caller -- 1.0.3
 ---------------
 
@@ -37,7 +36,7 @@ used. One way these can be extracted from the output is with the
 """
 gzip -dc my_sample.genome.vcf.gz |\
 extract_variants |\
-awk '/^#/ || $7 == "PASS" >\
+awk '/^#/ || $7 == "PASS"' >\
 all_passed_variants.vcf
 """
 
