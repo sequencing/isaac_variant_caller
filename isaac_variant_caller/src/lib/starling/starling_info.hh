@@ -31,12 +31,12 @@ struct starling_info : public prog_info {
 
 private:
     const char* name() const {
-        static const char NAME[] = "starling";
+        static const char NAME[] = "IsaacVariantCaller";
         return NAME;
     }
 
     const char* version() const {
-        static const char VERSION[] = "2.0.7";
+        static const char VERSION[] = "2.0.8";
         return VERSION;
     }
 

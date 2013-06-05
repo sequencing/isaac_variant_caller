@@ -1,3 +1,6 @@
+v1.0.4 20130604
+- Update starling to v2.0.8, closing infrequent issue with complex
+insert/delete events on read edges.
 v1.0.3 20130502
 - Update starling to v2.0.7, fix gVCF filters across deletions, handle indels
 on alignmnet edges
