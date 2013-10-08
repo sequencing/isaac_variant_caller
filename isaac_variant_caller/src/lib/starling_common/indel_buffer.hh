@@ -7,16 +7,14 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
-/// \file
 ///
 /// \author Chris Saunders
 ///
 
-#ifndef __INDEL_BUFFER_HH
-#define __INDEL_BUFFER_HH
+#pragma once
 
 #include "starling_common/indel.hh"
 
@@ -94,12 +92,14 @@ struct indel_buffer {
                  const bool is_shared,
                  bool& is_repeat_obs);
 
+#if 0
     // like insert indel, but used for indels from other samples where
     // the candidate indel pool is to be synchronized between
     // samples. Thus, this function does add read or contig id's to
     // indel_data.
     bool
     insert_shared_indel(const indel& in);
+#endif
 
     void
     clear_pos(const pos_t pos);
@@ -132,5 +132,3 @@ inline
 const indel_data&
 get_indel_data(const indel_buffer::const_iterator i) { return (i->second); }
 
-
-#endif

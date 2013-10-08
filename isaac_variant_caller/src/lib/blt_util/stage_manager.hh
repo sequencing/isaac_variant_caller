@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -78,7 +78,7 @@ struct stage_data {
     unsigned
     get_stage_id_shift(const int id) const {
         idmap_t::const_iterator i(_ids.find(id));
-        if(i==_ids.end()) unknown_id_error(id);
+        if (i==_ids.end()) unknown_id_error(id);
         return i->second;
     }
 
@@ -191,9 +191,14 @@ struct stage_manager {
     void
     revise_stage_data(const stage_data& sdata);
 
+    const stage_data&
+    get_stage_data() const {
+        return _sdata;
+    }
+
 private:
     // advances head position from its current value to pos,
-    // signalling all stage processing steps to pos_process_base along
+    // signaling all stage processing steps to pos_process_base along
     // the way:
     //
     void

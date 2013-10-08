@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -15,15 +15,14 @@
 /// \author Chris Saunders
 ///
 
-#ifndef __PARSE_UTIL_HH
-#define __PARSE_UTIL_HH
+#pragma once
 
 #include "boost/static_assert.hpp"
 
 #include <string>
 
 
-namespace casava {
+namespace illumina {
 namespace blt_util {
 
 /// parse TYPE from char* with several error checks, and advance
@@ -74,25 +73,32 @@ parse_type(const char*&) {
 template <>
 inline
 unsigned
-parse_type<unsigned>(const char*& s) { return parse_unsigned(s); }
+parse_type<unsigned>(const char*& s) {
+    return parse_unsigned(s);
+}
 
 template <>
 inline
 int
-parse_type<int>(const char*& s) { return parse_int(s); }
+parse_type<int>(const char*& s) {
+    return parse_int(s);
+}
 
 template <>
 inline
 long
-parse_type<long>(const char*& s) { return parse_long(s); }
+parse_type<long>(const char*& s) {
+    return parse_long(s);
+}
 
 template <>
 inline
 double
-parse_type<double>(const char*& s) { return parse_double(s); }
+parse_type<double>(const char*& s) {
+    return parse_double(s);
+}
 
 
 }
 }
 
-#endif

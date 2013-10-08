@@ -16,11 +16,11 @@ cppcheck \
 --enable=all --std=c++03 --force --verbose --quiet \
 --template='{file}:{line}:{severity}:{message}' \
 --suppress=uninitMemberVar \
---suppress=unsignedLessThanZero \
 --suppress=obsoleteFunctionsasctime \
 --suppress=unusedFunction \
 --suppress=unmatchedSuppression \
 --suppress=missingInclude \
+--suppress=variableHidingEnum \
 $thisDir 2>| $outFile
 
 # xml output is usful for getting a warnings id field, which is what you need to supress it:

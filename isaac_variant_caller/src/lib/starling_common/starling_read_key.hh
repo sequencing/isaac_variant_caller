@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -38,8 +38,8 @@ struct read_key {
 
     bool
     operator<(const read_key& rhs) const {
-        if(read_no()<rhs.read_no()) return true;
-        if(read_no()==rhs.read_no()) {
+        if (read_no()<rhs.read_no()) return true;
+        if (read_no()==rhs.read_no()) {
             return (strcmp(qname(),rhs.qname())<0);
         }
         return false;

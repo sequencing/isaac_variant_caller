@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -111,8 +111,8 @@ private:
     str2int(const char* s) const {
         const long i(str2long(s,"int"));
 
-        if((i > std::numeric_limits<int>::max()) ||
-           (i < std::numeric_limits<int>::min())) {
+        if ((i > std::numeric_limits<int>::max()) ||
+            (i < std::numeric_limits<int>::min())) {
             str2i_die(s,"int");
         }
         return static_cast<int>(i);

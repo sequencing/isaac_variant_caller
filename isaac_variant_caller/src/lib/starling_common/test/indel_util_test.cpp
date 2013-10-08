@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 #include "boost/test/unit_test.hpp"
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE( test_range_intersect_swap ) {
 static
 bool
 test_single_adjacent_case(const indel_key& ik,
-                           const bool expect) {
+                          const bool expect) {
 
     // test case represents a 10-base alignment from 10-20 (1-indexed range)
     static const known_pos_range tpr(9,20);

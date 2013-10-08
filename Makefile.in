@@ -23,7 +23,7 @@ all: install test
 $(INSTALL_SUBDIR): build
 	mkdir -p $@
 
-install: $(INSTALL_SUBDIR) build
+install: $(INSTALL_SUBDIR) test
 	rsync -a $(CURDIR)/etc $(INSTALL_DIR)
 	rsync -a $(CURDIR)/demo $(INSTALL_BIN_DIR)
 	rsync -a $(CURDIR)/redist/ $(INSTALL_DIR)/opt
@@ -38,7 +38,6 @@ test: build
 build:
 	$(MAKE) -C $(REDIST_DIR) $@
 	$(MAKE) -C $(SRC_DIR) $@
-	STRICT_COMPILE=0 $(MAKE) -C $(STAR_DIR) $@
 
 clean: srcclean
 	$(MAKE) -C $(REDIST_DIR) $@

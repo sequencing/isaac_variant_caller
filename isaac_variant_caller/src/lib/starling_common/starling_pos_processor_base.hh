@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -156,6 +156,10 @@ struct starling_pos_processor_base : public pos_processor_base, private boost::n
                 const align_id_t contig_id = 0,
                 const indel_set_t* contig_indels_ptr = NULL);
 
+    /// snv gt and stats must be reported for this pos (not only honored in strelka right now)
+    void
+    insert_forced_output_pos(const pos_t pos);
+
 #if 0
     starling_read*
     get_read(const align_id_t read_id,
@@ -223,10 +227,10 @@ protected:
             , _last_insert_pos(false) {
             const unsigned vs(opt.variant_windows.size());
             _wav.resize(vs);
-            for(unsigned i(0); i<vs; ++i) {
+            for (unsigned i(0); i<vs; ++i) {
                 const unsigned winsize(1+opt.variant_windows[i].flank_size*2);
                 _wav[i].reset(new win_avg_set(winsize));
-                if(winsize>_max_winsize) _max_winsize=winsize;
+                if (winsize>_max_winsize) _max_winsize=winsize;
             }
         }
 
@@ -236,7 +240,7 @@ protected:
                const unsigned n_filt,
                const unsigned n_spandel,
                const unsigned n_submap) {
-            if(_wav.empty()) return;
+            if (_wav.empty()) return;
             check_skipped_pos(pos);
             insert_impl(n_used,n_filt,n_spandel,n_submap);
         }
@@ -246,7 +250,7 @@ protected:
         insert_null(const pos_t pos) {
             check_skipped_pos(pos);
             const unsigned ws(_wav.size());
-            for(unsigned i(0); i<ws; ++i) {
+            for (unsigned i(0); i<ws; ++i) {
                 _wav[i]->ss_used_win.insert_null();
                 _wav[i]->ss_filt_win.insert_null();
                 _wav[i]->ss_spandel_win.insert_null();
@@ -261,9 +265,9 @@ protected:
 
         void
         check_skipped_pos(const pos_t pos) {
-            if(_is_last_pos && (pos>(_last_insert_pos+1))) {
+            if (_is_last_pos && (pos>(_last_insert_pos+1))) {
                 const unsigned rep(std::min(static_cast<pos_t>(_max_winsize),(pos-(_last_insert_pos+1))));
-                for(unsigned i(0); i<rep; ++i) insert_impl(0,0,0,0);
+                for (unsigned i(0); i<rep; ++i) insert_impl(0,0,0,0);
             }
             _last_insert_pos=pos;
             _is_last_pos=true;
@@ -275,7 +279,7 @@ protected:
                     const unsigned n_spandel,
                     const unsigned n_submap) {
             const unsigned ws(_wav.size());
-            for(unsigned i(0); i<ws; ++i) {
+            for (unsigned i(0); i<ws; ++i) {
                 _wav[i]->ss_used_win.insert(n_used);
                 _wav[i]->ss_filt_win.insert(n_filt);
                 _wav[i]->ss_spandel_win.insert(n_spandel);
@@ -344,13 +348,14 @@ protected:
 
     bool
     empty() const {
-        if(! _is_skip_process_pos) {
-            for(unsigned s(0); s<_n_samples; ++s) {
+        if (! _is_skip_process_pos) {
+            for (unsigned s(0); s<_n_samples; ++s) {
                 const sample_info& sif(sample(s));
-                if(! sif.read_buff.empty()) return false;
-                if(! sif.bc_buff.empty()) return false;
+                if (! sif.read_buff.empty()) return false;
+                if (! sif.bc_buff.empty()) return false;
             }
-            if(! _variant_print_pos.empty()) return false;
+            if (! _variant_print_pos.empty()) return false;
+            if (! _forced_output_pos.empty()) return false;
             _is_skip_process_pos=true;
         }
         return true;
@@ -390,6 +395,16 @@ private:
     void
     insert_pos_spandel_count(const pos_t pos,
                              const unsigned sample_no);
+    void
+    insert_mapq_count(const pos_t pos,
+                      const unsigned sample_no,
+                      const uint8_t mapq);
+    void
+    update_ranksum(const pos_t pos,
+                   const unsigned sample_no,
+                   const base_call& bc,
+                   const uint8_t mapq,
+                   const int cycle);
 
     void
     insert_pos_basecall(const pos_t pos,
@@ -472,18 +487,35 @@ private:
         return _rmi.size();
     }
 
-    void
-    set_largest_read_size(const unsigned rs);
+    // return false if read is too large
+    bool
+    update_largest_read_size(const unsigned rs);
 
     unsigned
-    get_largest_indel_size() const {
-        return _largest_indel_size;
+    get_largest_total_indel_ref_span_per_read() const {
+        return _largest_total_indel_ref_span_per_read;
     }
 
     void
-    set_largest_indel_size(const unsigned is);
+    update_largest_indel_ref_span(const unsigned is);
+
+    void
+    update_largest_total_indel_ref_span_per_read(const unsigned is);
+
+    void
+    update_stageman();
+
+    void
+    clear_forced_output_pos(const pos_t pos) {
+        _forced_output_pos.erase(pos);
+    }
 
 protected:
+
+    bool
+    is_forced_output_pos(const pos_t pos) const {
+        return (_forced_output_pos.find(pos) != _forced_output_pos.end());
+    }
 
     //////////////////////////////////
     // data:
@@ -495,7 +527,12 @@ protected:
 
     // read-length data structure used to compute mismatch density filter:
     read_mismatch_info _rmi;
-    unsigned _largest_indel_size;
+
+    // largest delete length observed for any one indel (but not greater than max_delete_size)
+    unsigned _largest_indel_ref_span;
+
+    // largest
+    unsigned _largest_total_indel_ref_span_per_read;
 
     stage_manager _stageman;
 
@@ -516,6 +553,7 @@ protected:
     double* _ws;
 
     std::set<pos_t> _variant_print_pos;
+    std::set<pos_t> _forced_output_pos;
 
     htype_region_data _hregion;
 

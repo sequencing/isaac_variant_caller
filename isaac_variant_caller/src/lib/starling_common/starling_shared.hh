@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -15,8 +15,7 @@
 /// \author Chris Saunders
 ///
 
-#ifndef __STARLING_SHARED_HH
-#define __STARLING_SHARED_HH
+#pragma once
 
 #include "blt_common/blt_shared.hh"
 #include "blt_util/reference_contig_segment.hh"
@@ -223,8 +222,6 @@ struct starling_options : public blt_options {
     bool is_tier2_indel_nonsite_match_prob;
     double tier2_indel_nonsite_match_prob;
 
-    std::string casava_chrom;
-
     std::vector<avg_window_data> variant_windows;
 
     // Test if an indel is not in the two most likely indel alleles
@@ -238,6 +235,9 @@ struct starling_options : public blt_options {
 
     // vcfs can be input to specify candidate indels:
     std::vector<std::string> input_candidate_indel_vcf;
+
+    // positions/indels in vcf must be written in output:
+    std::vector<std::string> force_output_vcf;
 
     // Internal development option - not for production use:
     bool is_baby_elephant;
@@ -314,6 +314,8 @@ struct starling_deriv_options : public blt_deriv_options {
 
     starling_align_limit sal;
 
+    std::string bam_header_data; // the full bam header, read in from bam file. Used for setting the sample name in
+
 private:
     std::auto_ptr<indel_digt_caller> _incaller; // object to precalculate bindel_diploid priors..
 };
@@ -338,5 +340,3 @@ struct starling_read_counts : public blt_read_counts {
     unsigned grouper_indel_intersect;
     unsigned grouper_unused;
 };
-
-#endif

@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -77,7 +77,7 @@ struct somatic_snv_genotype : private boost::noncopyable {
             snv_from_hom_qphred=qp;
             snv_from_anyhom_qphred=qp;
             max_gt_qphred=qp;
-            for(unsigned i(0); i<DDIGT::SIZE; ++i) {
+            for (unsigned i(0); i<DDIGT::SIZE; ++i) {
                 pprob[i] = p;
             }
         }

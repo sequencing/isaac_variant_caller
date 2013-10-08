@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -15,8 +15,8 @@
 /// \author Chris Saunders
 ///
 
-#ifndef __INDEL_HH
-#define __INDEL_HH
+#pragma once
+
 
 #include "starling_common/indel_key.hh"
 #include "starling_common/indel_data.hh"
@@ -41,8 +41,6 @@ struct indel {
 
 
 // Debugging dump:
+std::ostream& operator<<(std::ostream& os, const indel_observation& obs);
 std::ostream& operator<<(std::ostream& os, const indel& in);
 
-
-
-#endif

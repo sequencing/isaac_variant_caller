@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -48,7 +48,7 @@ void validate(boost::any& v,
 
     try {
         awd.flank_size = boost::lexical_cast<unsigned>(values[0]);
-    } catch(const boost::bad_lexical_cast&) {
+    } catch (const boost::bad_lexical_cast&) {
         throw po::validation_error(po::validation_error::invalid_option_value);
     }
     awd.filename = values[1];
@@ -64,112 +64,116 @@ get_starling_shared_option_parser(starling_options& opt) {
 
     po::options_description geno_opt("genotyping options");
     geno_opt.add_options()
-    ("snp-theta", po::value<double>(&opt.bsnp_diploid_theta)->default_value(opt.bsnp_diploid_theta),
+    ("snp-theta", po::value(&opt.bsnp_diploid_theta)->default_value(opt.bsnp_diploid_theta),
      "Set snp theta.")
-    ("indel-theta", po::value<double>(&opt.bindel_diploid_theta)->default_value(opt.bindel_diploid_theta),
+    ("indel-theta", po::value(&opt.bindel_diploid_theta)->default_value(opt.bindel_diploid_theta),
      "Set indel theta");
 
     po::options_description gvcf_opt("gVCF options");
     gvcf_opt.add_options()
-    ("gvcf-file",po::value<std::string>(&opt.gvcf.out_file),
+    ("gvcf-file", po::value(&opt.gvcf.out_file),
      "gVCF output file, enter '-' to write to stdout. An argument must be specified to activate gVCF mode")
-    ("chrom-depth-file",po::value<std::string>(&opt.gvcf.chrom_depth_file),
+    ("chrom-depth-file", po::value(&opt.gvcf.chrom_depth_file),
      "If provided, the mean depth for each chromosome will be read from file, and these values will be used for high depth filtration. File should contain one line per chromosome, where each line begins with: \"chrom_name<TAB>depth\" (default: no chrom depth filtration)")
-    ("gvcf-max-depth-factor",po::value<double>(&opt.gvcf.max_depth_factor)->default_value(opt.gvcf.max_depth_factor),
+    ("gvcf-max-depth-factor", po::value(&opt.gvcf.max_depth_factor)->default_value(opt.gvcf.max_depth_factor),
      "If a chrom depth file is supplied then loci with depth exceeding the mean chromosome depth times this value are filtered")
-    ("gvcf-min-gqx",po::value<double>(&opt.gvcf.min_gqx)->default_value(opt.gvcf.min_gqx),
+    ("gvcf-min-gqx", po::value(&opt.gvcf.min_gqx)->default_value(opt.gvcf.min_gqx),
      "Minimum locus GQX in gVCF output. Providing a negative value disables the filter.")
-    ("gvcf-max-snv-strand-bias",po::value<double>(&opt.gvcf.max_snv_sb)->default_value(opt.gvcf.max_snv_sb),
+    ("gvcf-max-snv-strand-bias", po::value(&opt.gvcf.max_snv_sb)->default_value(opt.gvcf.max_snv_sb),
      "Maximum SNV strand bias value")
-    ("gvcf-no-snv-strand-bias-filter",
+    ("gvcf-no-snv-strand-bias-filter", po::value(&opt.gvcf.is_max_snv_sb)->zero_tokens()->implicit_value(false),
      "Disable SNV strand-bias filter")
-    ("gvcf-max-snv-hpol",po::value<int>(&opt.gvcf.max_snv_hpol)->default_value(opt.gvcf.max_snv_hpol),
-      "SNVs are filtered if they exist in a homopolymer context greater than this length. A negative value disables the filter")
-    ("gvcf-max-indel-ref-repeat",po::value<int>(&opt.gvcf.max_ref_rep)->default_value(opt.gvcf.max_ref_rep),
+    ("gvcf-max-snv-hpol", po::value(&opt.gvcf.max_snv_hpol)->default_value(opt.gvcf.max_snv_hpol),
+     "SNVs are filtered if they exist in a homopolymer context greater than this length. A negative value disables the filter")
+    ("gvcf-max-indel-ref-repeat", po::value(&opt.gvcf.max_ref_rep)->default_value(opt.gvcf.max_ref_rep),
      "Indels are filtered if they lengthen or contract a homopolymer or dinucleotide with reference repeat length greater than this value. A negative value disables the filter")
-    ("gvcf-min-blockable-nonref",po::value<double>(&opt.gvcf.block_max_nonref)->default_value(opt.gvcf.block_max_nonref),
+    ("gvcf-min-blockable-nonref", po::value(&opt.gvcf.block_max_nonref)->default_value(opt.gvcf.block_max_nonref),
      "A site cannot be joined into a non-variant block if it contains more than this fraction of non-reference alleles")
-    ("gvcf-include-hapscore",
+    ("gvcf-include-hapscore", po::value(&opt.is_compute_hapscore)->zero_tokens(),
      "Include haplotype score at SNV positions in gVCF output.")
-    ("gvcf-no-block-compression",
+
+    ("gvcf-no-block-compression", po::value(&opt.gvcf.is_block_compression)->zero_tokens()->implicit_value(false),
      "Turn off block compression in gVCF output")
-    ("gvcf-skip-header",
+    ("gvcf-compute-VQSRmetrics", po::value(&opt.is_compute_VQSRmetrics)->zero_tokens(),
+     "Report metrics used for VQSR: BaseQRankSum, ReadPosRankSum, MQRankSum and MQ.")
+    ("gvcf-skip-header", po::value(&opt.gvcf.is_skip_header)->zero_tokens(),
      "Skip writing header info for the gvcf file (usually used to simplify segment concatenation)");
 
     po::options_description hap_opt("haplotype-options");
     hap_opt.add_options()
-    ("hap-model",
+    ("hap-model", po::value(&opt.is_htype_calling)->zero_tokens(),
      "Turn on haplotype-based variant calling");
 
     po::options_description blt_nonref_opt("nonref-model-options");
     blt_nonref_opt.add_options()
-    ("nonref-test-file", po::value<std::string>(&opt.nonref_test_filename),
+    ("nonref-test-file", po::value(&opt.nonref_test_filename),
      "Test for non-reference alleles at any frequency, write results to specified filename")
-    ("nonref-sites-file", po::value<std::string>(&opt.nonref_sites_filename),
+    ("nonref-sites-file", po::value(&opt.nonref_sites_filename),
      "Print results of non-reference allele test at every site to file")
-    ("nonref-variant-rate", po::value<double>(&opt.nonref_variant_rate)->default_value(opt.nonref_variant_rate),
+    ("nonref-variant-rate", po::value(&opt.nonref_variant_rate)->default_value(opt.nonref_variant_rate),
      "The expected non-reference variant frequency used with nonref-test")
-    ("min-nonref-freq", po::value<double>(&opt.min_nonref_freq)->default_value(opt.min_nonref_freq),
+    ("min-nonref-freq", po::value(&opt.min_nonref_freq)->default_value(opt.min_nonref_freq),
      "The minimum non-reference allele frequency considered in nonref-test")
-    ("nonref-site-error-rate", po::value<double>(&opt.nonref_site_error_rate)->default_value(opt.nonref_site_error_rate),
+    ("nonref-site-error-rate", po::value(&opt.nonref_site_error_rate)->default_value(opt.nonref_site_error_rate),
      "The expected rate of erroneous non-reference allele sites applied to the nonref model. At error sites a nonref allele is expected in the frequency range [0,decay_freq], with a probability that linearly decays to zero at decay_freq.")
     ("nonref-site-error-decay-freq",
-     po::value<double>(&opt.nonref_site_error_decay_freq)->default_value(opt.nonref_site_error_decay_freq),
+     po::value(&opt.nonref_site_error_decay_freq)->default_value(opt.nonref_site_error_decay_freq),
      "The decay_freq used for the site-error state as described above.");
 
     po::options_description contig_opt("contig-options");
     contig_opt.add_options()
-    ("min-contig-open-end-support",po::value<unsigned>(&opt.min_contig_open_end_support)->default_value(opt.min_contig_open_end_support),
+    ("min-contig-open-end-support", po::value(&opt.min_contig_open_end_support)->default_value(opt.min_contig_open_end_support),
      "Filter out any open-ended contig with an unaligned breakpoint sequence length of less than N.")
-    ("min-contig-edge-alignment",po::value<unsigned>(&opt.min_contig_edge_alignment)->default_value(opt.min_contig_edge_alignment),
+    ("min-contig-edge-alignment", po::value(&opt.min_contig_edge_alignment)->default_value(opt.min_contig_edge_alignment),
      "Filter out any contig with an edge match segment shorter than N.")
-    ("min-contig-contiguous-match",po::value<unsigned>(&opt.min_contig_contiguous_match)->default_value(opt.min_contig_contiguous_match),
+    ("min-contig-contiguous-match", po::value(&opt.min_contig_contiguous_match)->default_value(opt.min_contig_contiguous_match),
      "Filter out any contig without a match segment of length at least N.");
 
     po::options_description realign_opt("realignment-options");
     realign_opt.add_options()
-    ("max-indel-toggle-depth", po::value<int>(&opt.max_read_indel_toggle)->default_value(opt.max_read_indel_toggle),
+    ("max-indel-toggle-depth", po::value(&opt.max_read_indel_toggle)->default_value(opt.max_read_indel_toggle),
      "Controls the realignment stringency. Lowering this value will increase the realignment speed at the expense of indel-call quality")
-    ("skip-realignment",
+    ("skip-realignment", po::value(&opt.is_skip_realignment)->zero_tokens(),
      "Turns off read realignment. Only accepted when there are no indel calling options turned on and no input grouper contigs");
 
     po::options_description indel_opt("indel-options");
     indel_opt.add_options()
     ("max-candidate-indel-depth",
-     po::value<unsigned>(&opt.max_candidate_indel_depth)->default_value(opt.max_candidate_indel_depth),
+     po::value(&opt.max_candidate_indel_depth)->default_value(opt.max_candidate_indel_depth),
      "Maximum estimated read depth for an indel to reach candidacy. If any one sample exceeds this depth at the indel, the indel will not reach candidacy in all indel-synchronized samples")
     ("min-candidate-open-length",
-     po::value<unsigned>(&opt.min_candidate_indel_open_length)->default_value(opt.min_candidate_indel_open_length),
+     po::value(&opt.min_candidate_indel_open_length)->default_value(opt.min_candidate_indel_open_length),
      "Minimum open-ended breakpoint sequence length required to become a breakpoint candidate")
     ("candidate-indel-input-vcf",
-     po::value<std::vector<std::string> >(&opt.input_candidate_indel_vcf)->multitoken(),
+     po::value(&opt.input_candidate_indel_vcf)->multitoken(),
      "Add candidate indels from the specified vcf file. Option can be provided multiple times to combine evidence from multiple vcf files.")
-    ("upstream-oligo-size",
-     po::value<unsigned>(&opt.upstream_oligo_size),
+    ("force-output-vcf", po::value(&opt.force_output_vcf)->multitoken(),
+     "For each site or indel in the vcf file to be written to the snv or indel output, even if no variant is found. An indels submitted will also be treated as candidate indels. Option can be provided multiple times to combine multiple vcf files.")
+    ("upstream-oligo-size", po::value(&opt.upstream_oligo_size),
      "Treat reads as if they have an upstream oligo anchor for purposes of meeting minimum breakpoint overlap in support of an indel.");
 
     po::options_description window_opt("window-options");
     window_opt.add_options()
-    ("variant-window-flank-file",po::value<std::vector<avg_window_data> >(&opt.variant_windows)->multitoken(),
+    ("variant-window-flank-file", po::value(&opt.variant_windows)->multitoken(),
      "Print out regional average basecall statistics at variant sites within a window of the variant call. Must provide arguments for window flank size and output file. Option can be specified multiple times. (example: '--variant-window-flank-file 10 window10.txt')");
 
     po::options_description compat_opt("compatibility-options");
     compat_opt.add_options()
-    ("eland-compatibility",
+    ("eland-compatibility", po::value(&opt.is_eland_compat)->zero_tokens(),
      "When argument is provided the input reads are checked for an optional AS field corresponding to the ELAND PE map score.");
 
     po::options_description input_opt("input-options");
     input_opt.add_options()
-    ("max-input-depth", po::value<unsigned>(&opt.max_input_depth),
+    ("max-input-depth", po::value(&opt.max_input_depth),
      "Maximum allowed read depth per sample (prior to realignment). Input reads which would exceed this depth are filtered out.  (default: no limit)")
-    ("ignore-conflicting-read-names",
+    ("ignore-conflicting-read-names", po::value(&opt.is_ignore_read_names)->zero_tokens(),
      "Do not report an error if two input reads share the same QNAME and read number");
 
     po::options_description other_opt("other-options");
     other_opt.add_options()
-    ("report-file", po::value<std::string>(&opt.report_filename),
+    ("report-file", po::value(&opt.report_filename),
      "Report non-error run info and statistics to file")
-    ("remap-input-softclip",
+    ("remap-input-softclip", po::value(&opt.is_remap_input_softclip)->zero_tokens(),
      "Attempt to realign all soft-clipped segments in input reads");
 
     po::options_description new_opt("New options");
@@ -347,13 +351,13 @@ finalize_legacy_starling_options(const prog_info& pinfo,
                                  starling_options& opt) {
 
 
-    if(! opt.is_ref_set()) {
+    if (! opt.is_ref_set()) {
         pinfo.usage("a reference sequence must be specified");
     }
 
     // canonicalize the reference sequence path:
-    if(opt.is_samtools_ref_set) {
-        if(! compat_realpath(opt.samtools_ref_seq_file)) {
+    if (opt.is_samtools_ref_set) {
+        if (! compat_realpath(opt.samtools_ref_seq_file)) {
             std::ostringstream oss;
             oss << "can't resolve samtools reference path: " << opt.samtools_ref_seq_file << "\n";
             pinfo.usage(oss.str().c_str());
@@ -362,18 +366,18 @@ finalize_legacy_starling_options(const prog_info& pinfo,
         assert(0);
     }
 
-    if(! opt.is_user_genome_size) {
+    if (! opt.is_user_genome_size) {
         // this requirement is not what we want, but it's the only way to make things reliable for now:
         pinfo.usage("must specify genome-size");
     } else {
-        if(opt.user_genome_size<1) {
+        if (opt.user_genome_size<1) {
             pinfo.usage("genome-size must be greater than 0");
         }
     }
 
 
-    if(! opt.is_call_indels()) {
-        if(opt.is_simple_indel_error) {
+    if (! opt.is_call_indels()) {
+        if (opt.is_simple_indel_error) {
             pinfo.usage("--indel-error-rate has no effect when not calling indels");
         }
     }
@@ -382,23 +386,23 @@ finalize_legacy_starling_options(const prog_info& pinfo,
         const bool is_contigs(! opt.indel_contig_filename.empty());
         const bool is_reads(! opt.indel_contig_read_filename.empty());
 
-        if(is_contigs ^ is_reads) { //should work when they're both bools...
-            if(is_contigs) {
+        if (is_contigs ^ is_reads) { //should work when they're both bools...
+            if (is_contigs) {
                 pinfo.usage("Contigs specified without corresponding contig reads.");
             } else {
                 pinfo.usage("Contig reads specified without corresponding contigs.");
             }
         }
 
-        if(is_contigs || is_reads) {
-            if(opt.is_ignore_read_names) {
+        if (is_contigs || is_reads) {
+            if (opt.is_ignore_read_names) {
                 pinfo.usage("Cannot use 'ignore-conflicting-read-names' when indel contigs are specified.");
             }
         }
     }
 
-    if(opt.is_write_candidate_indels_only &&
-       opt.candidate_indel_filename.empty()) {
+    if (opt.is_write_candidate_indels_only &&
+        opt.candidate_indel_filename.empty()) {
         pinfo.usage("Cannot specify -write-candidate-indels-only without providing candidate indel filename.");
     }
 }
@@ -420,45 +424,27 @@ finalize_starling_options(const prog_info& pinfo,
     // allow non-reference hets, we stick with the lower value
     // used for snps:
     //
-    if(opt.bindel_diploid_theta>MAX_DIPLOID_THETA) {
+    if (opt.bindel_diploid_theta>MAX_DIPLOID_THETA) {
         std::ostringstream oss;
         oss << "indel diploid heterozygosity exceeds maximum value of: " << MAX_DIPLOID_THETA;
         pinfo.usage(oss.str().c_str());
     }
 
-    if(vm.count("hap-model")) {
-        opt.is_htype_calling=true;
-    }
-
-    if(vm.count("eland-compatibility")) {
-        opt.is_eland_compat=true;
-    }
-
-    if(vm.count("max-input-depth")) {
+    if (vm.count("max-input-depth")) {
         opt.is_max_input_depth=true;
     }
 
-    if(vm.count("remap-input-softclip")) {
-        opt.is_remap_input_softclip=true;
-    }
-
-    if(vm.count("ignore-conflicting-read-names")) {
-        opt.is_ignore_read_names=true;
-    }
-
-    if(vm.count("skip-realignment")) {
-        if(opt.is_call_indels()) {
+    if (opt.is_skip_realignment) {
+        if (opt.is_call_indels()) {
             pinfo.usage("Cannot disable realignment when indel-calling is selected.");
         }
 
         const bool is_contigs(! opt.indel_contig_filename.empty());
         const bool is_reads(! opt.indel_contig_read_filename.empty());
 
-        if(is_contigs || is_reads) {
+        if (is_contigs || is_reads) {
             pinfo.usage("Cannot disable realignment when reading grouper contigs.");
         }
-
-        opt.is_skip_realignment=true;
     }
 
     // gvcf option handlers:
@@ -466,40 +452,24 @@ finalize_starling_options(const prog_info& pinfo,
     opt.gvcf.is_max_snv_hpol = (opt.gvcf.max_snv_hpol >= 0);
     opt.gvcf.is_max_ref_rep = (opt.gvcf.max_ref_rep >= 0);
 
-    if(vm.count("gvcf-no-snv-strand-bias-filter")) {
-        opt.gvcf.is_max_snv_sb=false;
-    }
-
-    if(vm.count("gvcf-include-hapscore")) {
-        opt.is_compute_hapscore=true;
-    }
-
-    if(vm.count("gvcf-no-block-compression")) {
-        opt.gvcf.is_block_compression=false;
-    }
-
-    if(vm.count("gvcf-skip-header")) {
-        opt.gvcf.is_skip_header=true;
-    }
-
     std::sort(opt.variant_windows.begin(),opt.variant_windows.end());
     const unsigned vs(opt.variant_windows.size());
     unsigned last_fs(0);
     std::set<std::string> filenames;
-    for(unsigned i(0); i<vs; ++i) {
+    for (unsigned i(0); i<vs; ++i) {
         const std::string& filename(opt.variant_windows[i].filename);
-        if(filenames.count(filename)) {
+        if (filenames.count(filename)) {
             pinfo.usage((boost::format("variant-window-flank-file options contain a repeated filename: '%s'") % filename).str().c_str());
         }
         filenames.insert(filename);
         const unsigned fs(opt.variant_windows[i].flank_size);
-        if(fs>max_flank_size) {
+        if (fs>max_flank_size) {
             pinfo.usage((boost::format("variant-window-flank-file flank size %u exceeds maximum flank size of %u") % fs % max_flank_size).str().c_str());
         }
-        if(fs<1) {
+        if (fs<1) {
             pinfo.usage((boost::format("variant-window-flank-file flank size %u is less than minimum flank size of 1") % fs).str().c_str());
         }
-        if((i!=0) && (fs==last_fs)) {
+        if ((i!=0) && (fs==last_fs)) {
             pinfo.usage((boost::format("Repeated flank size of %u provided to variant-window-flank-file") % fs).str().c_str());
         }
         last_fs=fs;

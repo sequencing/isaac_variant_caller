@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -36,7 +36,7 @@ struct pos_processor_base {
     void
     check_process_pos(const int stage_no,
                       const pos_t pos) {
-        if(_is_skip_process_pos) return;
+        if (_is_skip_process_pos) return;
         process_pos(stage_no,pos);
     }
 

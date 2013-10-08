@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -31,7 +31,7 @@ struct starling_align_limit {
 
     unsigned
     get_max_toggle(const unsigned n_usable_indels) const {
-        if(n_usable_indels>=_max_toggle.size()) {
+        if (n_usable_indels>=_max_toggle.size()) {
             return 1;
         } else {
             return _max_toggle[n_usable_indels];

@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -26,5 +26,5 @@ dump_indel_set(const indel_set_t& is,
                std::ostream& os) {
 
     indel_set_t::const_iterator i(is.begin()), i_end(is.end());
-    for(; i!=i_end; ++i) os << *i;
+    for (; i!=i_end; ++i) os << *i;
 }

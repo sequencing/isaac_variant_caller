@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 #include "boost/test/unit_test.hpp"
@@ -28,8 +28,8 @@ get_db_test_pattern() {
     depth_buffer db;
 
     // load a depth pattern in:
-    for(unsigned i(100);i<110;++i) {
-        for(unsigned j(i+1);j<110;++j) {
+    for (unsigned i(100); i<110; ++i) {
+        for (unsigned j(i+1); j<110; ++j) {
             db.inc(j);
         }
     }

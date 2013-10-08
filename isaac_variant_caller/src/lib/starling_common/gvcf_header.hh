@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -27,6 +27,7 @@
 void
 finish_gvcf_header(const gvcf_options& opt,
                    const cdmap_t& chrom_depth,
+                   const std::string& bam_header_data,
                    std::ostream& os);
 
 #endif

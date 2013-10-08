@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -17,6 +17,7 @@
 
 #pragma once
 
+#include "blt_util/ranksum.hh"
 #include "starling_common/indel_align_type.hh"
 #include "starling_common/indel_key.hh"
 #include "starling_common/starling_types.hh"
@@ -28,6 +29,13 @@
 #include <set>
 #include <vector>
 
+//#define ID_DEBUG
+
+#ifdef ID_DEBUG
+#include "blt_util/log.hh"
+
+#include <iostream>
+#endif
 
 
 /// represents the data associated with a single indel observation:
@@ -37,12 +45,14 @@ struct indel_observation_data {
     indel_observation_data()
         : is_noise(false)
         , is_external_candidate(false)
+        , is_forced_output(false)
         , iat(INDEL_ALIGN_TYPE::GENOME_SUBMAP_READ)
         , id(0)
     {}
 
     bool is_noise;
     bool is_external_candidate;
+    bool is_forced_output; // results of gt tests must be output even for very unlikely cases
     INDEL_ALIGN_TYPE::index_t iat;
     align_id_t id;
     std::string insert_seq;
@@ -75,18 +85,18 @@ struct read_path_scores {
     insert_alt(const indel_key& ik,
                const score_t a) {
         const unsigned ais(static_cast<unsigned>(alt_indel.size()));
-        if(ais < 2) {
+        if (ais < 2) {
             alt_indel.push_back(std::make_pair(ik,a));
         } else {
             unsigned min_index(ais);
             score_t min(a);
-            for(unsigned i(0); i<ais; ++i) {
-                if(alt_indel[i].second < min) {
+            for (unsigned i(0); i<ais; ++i) {
+                if (alt_indel[i].second < min) {
                     min = alt_indel[i].second;
                     min_index = i;
                 }
             }
-            if(min_index<ais) {
+            if (min_index<ais) {
                 alt_indel[min_index] = std::make_pair(ik,a);
             }
         }
@@ -118,7 +128,7 @@ struct read_path_scores {
 /// the most common insert sequence.
 ///
 /// Note that for open-breakends we also report the longest insert
-/// candidate, and consider the most prevelant as a secondary term.
+/// candidate, and consider the most prevalent as a secondary term.
 ///
 struct insert_seq_manager {
 
@@ -130,8 +140,8 @@ struct insert_seq_manager {
     // get final consensus sequence:
     const std::string&
     get() {
-        if(! _is_consensus) {
-            finalize();
+        if (! _is_consensus) {
+            _finalize();
         }
         return _consensus_seq;
     }
@@ -139,16 +149,18 @@ struct insert_seq_manager {
     // add insert sequence observation:
     void
     add_obs(const std::string& seq) {
-        assert(! _is_consensus);
+        if (_is_consensus) {
+            _exception("Attempting to add insert observation after finalizing");
+        }
 
         // if we don't know what the most common insert will be after
         // this many samples are collected, then more cases will be
         // unlikely to help:
         static const unsigned max_obs_count(256);
-        if(_obs_count>max_obs_count) return;
+        if (_obs_count>max_obs_count) return;
 
         obs_t::iterator i(_obs.find(seq));
-        if(i == _obs.end()) {
+        if (i == _obs.end()) {
             _obs[seq] = 1;
         } else {
             i->second += 1;
@@ -157,7 +169,10 @@ struct insert_seq_manager {
     }
 
 private:
-    void finalize();
+    void _exception(const char* msg) const;
+
+    void _finalize();
+
 
     typedef std::map<std::string,unsigned> obs_t;
     bool _is_consensus;
@@ -171,8 +186,11 @@ private:
 // represents the data from all observations associated with an indel
 //
 struct indel_data {
-    indel_data()
-        : is_external_candidate(false)
+
+    indel_data(const indel_key& ik)
+        : _ik(ik),
+          is_external_candidate(false),
+          is_forced_output(false)
     {}
 
     /// add an observation for this indel
@@ -187,12 +205,18 @@ struct indel_data {
                     bool& is_repeat_obs) {
 
 
-        if(! is_shared) {
+#ifdef ID_DEBUG
+        log_os << "KATTER: adding obs for indel: " << _ik;
+        log_os << "KATTER: is_shared: " << is_shared << " is_repeat: " << is_repeat_obs << "\n";
+        log_os << "KATTER: is_external: " << obs_data.is_external_candidate << " align_id: " << obs_data.id << "\n\n";
+#endif
+
+        if (! is_shared) {
             add_observation_core(obs_data,is_repeat_obs);
         }
 
-        if(! obs_data.insert_seq.empty()) {
-            if(! (is_shared && is_repeat_obs)) {
+        if (! obs_data.insert_seq.empty()) {
+            if (! (is_shared && is_repeat_obs)) {
                 _insert_seq.add_obs(obs_data.insert_seq);
             }
         }
@@ -212,13 +236,16 @@ struct indel_data {
         add_evidence(tier2_map_read_ids,id.tier2_map_read_ids);
         add_evidence(submap_read_ids,id.submap_read_ids);
         add_evidence(noise_read_ids,id.noise_read_ids);
-        if(id.is_external_candidate) is_external_candidate=true;
+        if (id.is_external_candidate) is_external_candidate=true;
     }
 #endif
 
 
     const std::string&
     get_insert_seq() const {
+#ifdef ID_DEBUG
+        log_os << "KATTER: reporting insert seq for indel: " << _ik << "\n";
+#endif
         return _insert_seq.get();
     }
 
@@ -240,6 +267,9 @@ struct indel_data {
 #endif
 
 private:
+    // indel key is maintained for debugging only:
+    const indel_key _ik;
+
     mutable insert_seq_manager _insert_seq;
 
 public:
@@ -272,6 +302,9 @@ public:
     // candidates can be provided from external sources as well:
     bool is_external_candidate;
 
+    // if true candidates should be output even if very unlikely:
+    bool is_forced_output;
+
     // this structure represents support for the indel among all reads
     // which cross an indel breakpoint by a sufficient margin after
     // re-alignment:
@@ -281,6 +314,13 @@ public:
     evidence_t suboverlap_tier1_read_ids; // the reads which cross an indel breakpoint, but not by enough
     // to be entered into the scores list
     evidence_t suboverlap_tier2_read_ids;
+
+    ranksum mq_ranksum;
+    ranksum baseq_ranksum;
+    ranksum read_pos_ranksum;
+    unsigned n_mapq;
+    // sum of mapq for all reads at this position
+    int cumm_mapq;
 
     struct status_t {
         status_t()
@@ -310,32 +350,32 @@ private:
     add_observation_core(const indel_observation_data& obs_data,
                          bool& is_repeat_obs) {
 
-        if(obs_data.is_external_candidate) {
-            is_external_candidate=true;
+        is_external_candidate=obs_data.is_external_candidate;
+        is_forced_output=obs_data.is_forced_output;
 
-        } else {
+        if (! is_external_candidate) {
 
             using namespace INDEL_ALIGN_TYPE;
 
             if       (obs_data.iat == CONTIG) {
                 contig_ids.insert(obs_data.id);
-            } else if(obs_data.is_noise) {
+            } else if (obs_data.is_noise) {
                 // noise state overrides all except contig type:
                 //
                 noise_read_ids.insert(obs_data.id);
-            } else if(obs_data.iat == CONTIG_READ) {
-                if(all_read_ids.find(obs_data.id) != all_read_ids.end()) {
+            } else if (obs_data.iat == CONTIG_READ) {
+                if (all_read_ids.find(obs_data.id) != all_read_ids.end()) {
                     is_repeat_obs=true;
                 }
                 all_read_ids.insert(obs_data.id);
-            } else if(obs_data.iat == GENOME_TIER1_READ) {
-                if(all_read_ids.find(obs_data.id) != all_read_ids.end()) {
+            } else if (obs_data.iat == GENOME_TIER1_READ) {
+                if (all_read_ids.find(obs_data.id) != all_read_ids.end()) {
                     is_repeat_obs=true;
                 }
                 all_read_ids.insert(obs_data.id);
-            } else if(obs_data.iat == GENOME_TIER2_READ) {
+            } else if (obs_data.iat == GENOME_TIER2_READ) {
                 tier2_map_read_ids.insert(obs_data.id);
-            } else if(obs_data.iat == GENOME_SUBMAP_READ) {
+            } else if (obs_data.iat == GENOME_SUBMAP_READ) {
                 submap_read_ids.insert(obs_data.id);
             } else {
                 assert(0);
@@ -348,6 +388,7 @@ private:
 
 
 // Debugging dumps:
+std::ostream& operator<<(std::ostream& os, const indel_observation_data& id);
 std::ostream& operator<<(std::ostream& os, const read_path_scores& rps);
 std::ostream& operator<<(std::ostream& os, const indel_data& id);
 

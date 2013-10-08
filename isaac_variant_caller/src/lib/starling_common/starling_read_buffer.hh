@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -97,7 +97,7 @@ struct starling_read_buffer : private boost::noncopyable {
     starling_read*
     get_read(const align_id_t read_id) {
         const read_data_t::iterator k(_read_data.find(read_id));
-        if(k == _read_data.end()) return NULL;
+        if (k == _read_data.end()) return NULL;
         return (k->second);
     }
 
@@ -105,7 +105,7 @@ struct starling_read_buffer : private boost::noncopyable {
     const starling_read*
     get_read(const align_id_t read_id) const {
         const read_data_t::const_iterator k(_read_data.find(read_id));
-        if(k == _read_data.end()) return NULL;
+        if (k == _read_data.end()) return NULL;
         return (k->second);
     }
 
@@ -177,7 +177,7 @@ struct read_segment_iter {
     // returns false if no more reads
     //
     bool next() {
-        if(_head!=_end) _head++;
+        if (_head!=_end) _head++;
         return (_head!=_end);
     }
 

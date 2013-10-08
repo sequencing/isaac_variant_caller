@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -46,8 +46,8 @@ is_lrt_reject_null(const double null_loghood,
                    const unsigned df,
                    const double alpha) {
 
-    if(df == 0) return false;
-    if(null_loghood>alt_loghood) return false;
+    if (df == 0) return false;
+    if (null_loghood>alt_loghood) return false;
 
     const double log_lrt(-2.*(null_loghood-alt_loghood));
 

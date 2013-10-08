@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -97,7 +97,7 @@ struct pos_range {
 
     unsigned
     size() const {
-        if(! is_complete()) return 0;
+        if (! is_complete()) return 0;
         return std::max(0,end_pos-begin_pos);
     }
 

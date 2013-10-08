@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -20,7 +20,7 @@
 
 //
 // Breakpoints refer to both insertions and deletions which exceed
-// varling's MAX_INDEL_SIZE. In this case we try to account for the
+// the method's max_indel_size In this case we try to account for the
 // breakpoint during snp-calling, but do not attempt to call the indel
 // using the same methods used for small indels.
 //
@@ -66,7 +66,7 @@ enum index_t {
 inline
 const char*
 get_index_label(index_t id) {
-    switch(id) {
+    switch (id) {
     case NONE:        return "NONE";
     case INSERT:      return "INSERT";
     case DELETE:      return "DELETE";

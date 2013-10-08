@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -33,7 +33,7 @@ log1p_switch(const FloatType x) {
     // better number??
     static const FloatType smallx_thresh(0.01);
 
-    if(std::abs(x)<smallx_thresh) {
+    if (std::abs(x)<smallx_thresh) {
         return boost::math::log1p(x);
     } else {
         return std::log(1+x);
@@ -46,7 +46,7 @@ log1p_switch(const FloatType x) {
 template <typename FloatType>
 FloatType
 log_sum(FloatType x1, FloatType x2) {
-    if(x1<x2) std::swap(x1,x2);
+    if (x1<x2) std::swap(x1,x2);
     return x1 + log1p_switch(std::exp(x2-x1));
 }
 

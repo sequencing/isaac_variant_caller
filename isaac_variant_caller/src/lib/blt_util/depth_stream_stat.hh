@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -37,9 +37,9 @@ struct depth_stream_stat {
 
     void update (const unsigned d) {
         k_++;
-        if(d!=0) n_++;
-        if((k_==1) || (d>max_)) max_=d;
-        if((k_==1) || (d<min_)) min_=d;
+        if (d!=0) n_++;
+        if ((k_==1) || (d>max_)) max_=d;
+        if ((k_==1) || (d<min_)) min_=d;
 
         // important to do M before Q as Q uses previous iterate of M
         const double delta(static_cast<double>(d)-M_);

@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -46,7 +46,7 @@ struct export_stream_reader : private boost::noncopyable {
 
     /// \brief Return NULL @ invalid (first,EOF);
     const export_line_parser* exline() const {
-        if(_is_line_set) return &_elp;
+        if (_is_line_set) return &_elp;
         else             return 0;
     }
 

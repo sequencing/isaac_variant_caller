@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -40,7 +40,7 @@ struct vcf_streamer {
     bool next(const bool is_indel_only=false);
 
     const vcf_record* get_record_ptr() const {
-        if(_is_record_set) return &_vcfrec;
+        if (_is_record_set) return &_vcfrec;
         else               return NULL;
     }
 

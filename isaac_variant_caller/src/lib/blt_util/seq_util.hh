@@ -7,15 +7,14 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
 
 /// \author Chris Saunders
 ///
-#ifndef __SEQ_UTIL_HH
-#define __SEQ_UTIL_HH
+#pragma once
 
 #include "blt_util/bam_seq.hh"
 #include "blt_util/blt_types.hh"
@@ -46,7 +45,7 @@ inline
 uint8_t
 base_to_id(const char a) {
     using namespace BASE_ID;
-    switch(a) {
+    switch (a) {
     case 'A': return A;
     case 'C': return C;
     case 'G': return G;
@@ -65,7 +64,7 @@ bam_seq_code_to_id(const uint8_t a,
 
     using namespace BAM_BASE;
 
-    switch(a) {
+    switch (a) {
     case REF: return bam_seq_code_to_id(ref);
     case A:   return 0;
     case C:   return 1;
@@ -86,7 +85,7 @@ char
 id_to_base(const uint8_t i) {
     static const char base[] = "ACGTN";
 
-    if(i>N_BASE) id_to_base_error(i);
+    if (i>N_BASE) id_to_base_error(i);
     return base[i];
 }
 
@@ -96,7 +95,7 @@ id_to_base(const uint8_t i) {
 inline
 bool
 is_valid_base(char a) {
-    switch(a) {
+    switch (a) {
     case 'A':
     case 'C':
     case 'G':
@@ -109,7 +108,7 @@ is_valid_base(char a) {
 inline
 bool
 is_iupac_base(char a) {
-    switch(a) {
+    switch (a) {
     case 'A':
     case 'C':
     case 'G':
@@ -139,7 +138,7 @@ is_valid_seq(const char* seq);
 inline
 char
 elandize_base(char a) {
-    switch(a) {
+    switch (a) {
     case 'A': return 'A';
     case 'C': return 'C';
     case 'G': return 'G';
@@ -167,7 +166,7 @@ elandize_base(char a) {
 inline
 char
 comp_base(char a) {
-    switch(a) {
+    switch (a) {
     case 'A': return 'T';
     case 'C': return 'G';
     case 'G': return 'C';
@@ -185,7 +184,7 @@ get_seq_base(const char* seq,
              const pos_t size,
              const pos_t pos) {
 
-    if((pos<0) || (pos>=size)) {
+    if ((pos<0) || (pos>=size)) {
         return 'N';
     } else {
         return seq[pos];
@@ -206,8 +205,8 @@ template <typename Iter>
 void
 reverseComp(Iter b,Iter e) {
     char t;
-    for(; b!=e; ++b) {
-        if((--e)==b) { *b=comp_base(*b); break; }
+    for (; b!=e; ++b) {
+        if ((--e)==b) { *b=comp_base(*b); break; }
         t=comp_base(*b);
         *b=comp_base(*e);
         *e=t;
@@ -222,7 +221,7 @@ inline void fixCstring(char* b) { *b='\0'; }
 template <typename ConstIter,typename Iter>
 void
 reverseCompCopy(ConstIter cb,ConstIter ce,Iter b) {
-    while(cb!=ce) { *b++ = comp_base(*--ce); }
+    while (cb!=ce) { *b++ = comp_base(*--ce); }
     fixCstring(b);
 }
 
@@ -263,4 +262,3 @@ get_seq_repeat_unit(const std::string& seq,
                     std::string& repeat_unit,
                     unsigned& repeat_count);
 
-#endif

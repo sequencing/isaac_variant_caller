@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -50,7 +50,7 @@ usage(const char* xmessage) const {
     write_starling_legacy_options(os);
     os << "\n";
 
-    if(xmessage) {
+    if (xmessage) {
         os << "\n"
            << "******** COMMAND-LINE ERROR:: " << xmessage << " ********\n"
            << "\n";

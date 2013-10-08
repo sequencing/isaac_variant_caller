@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -30,7 +30,7 @@ bam_dumper(const char* filename,
 
     _bfp = samopen(filename, "wb", header);
 
-    if(NULL == _bfp) {
+    if (NULL == _bfp) {
         log_os << "ERROR: Failed to open output BAM file: " << filename << "\n";
         exit(EXIT_FAILURE);
     }

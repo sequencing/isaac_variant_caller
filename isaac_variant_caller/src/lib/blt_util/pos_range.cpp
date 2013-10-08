@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -25,13 +25,13 @@
 std::ostream& operator<<(std::ostream& os, const pos_range& pr) {
 
     os << "[";
-    if(pr.is_begin_pos) {
+    if (pr.is_begin_pos) {
         os << pr.begin_pos+1;
     } else {
         os << "-inf";
     }
     os << " .. ";
-    if(pr.is_end_pos) {
+    if (pr.is_end_pos) {
         os << pr.end_pos;
     } else {
         os << "inf";

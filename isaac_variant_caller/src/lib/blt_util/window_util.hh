@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -82,8 +82,8 @@ struct window_average {
 private:
     void
     pre_insert() {
-        if(_size==_full_size) {
-            if(_is_buf[_head]) {
+        if (_size==_full_size) {
+            if (_is_buf[_head]) {
                 _total -= _buf[_head];
             } else {
                 _null_size--;

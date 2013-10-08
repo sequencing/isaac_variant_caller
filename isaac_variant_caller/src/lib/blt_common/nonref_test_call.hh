@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -33,7 +33,7 @@ struct nonref_test_call : private boost::noncopyable {
 #if 0
     is_freq(false),
     min_loghood(0) {
-        for(unsigned i(0); i<N_BASE; ++i) allele_freq[i]=0.;
+        for (unsigned i(0); i<N_BASE; ++i) allele_freq[i]=0.;
     }
 #endif
 

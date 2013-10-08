@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -25,7 +25,7 @@
 /// Manages a partial reference sequence segment
 ///
 /// This object holds the reference sequence specified by the current
-/// runs begin and end range, plus some padding on each side. To get
+/// run's begin and end range, plus some padding on each side. To get
 /// this integrated into the current code as quickly as possible it
 /// currently exposes the internal string object holding the sequence
 /// data. When time allows this will be restricted so that a compressed
@@ -39,7 +39,7 @@ struct reference_contig_segment {
 
     char
     get_base(const pos_t pos) const {
-        if(pos<_offset || pos>=end()) return 'N';
+        if (pos<_offset || pos>=end()) return 'N';
         return _seq[pos-_offset];
     }
 
@@ -48,10 +48,10 @@ struct reference_contig_segment {
                   const pos_t length,
                   std::string& substr) const {
 
-        if(pos<_offset || (pos+length)>end()) {
+        if (pos<_offset || (pos+length)>end()) {
             //slow path (minority of calls):
             substr.clear();
-            for(int i(0); i<length; ++i) {
+            for (int i(0); i<length; ++i) {
                 substr.push_back(get_base(pos+i));
             }
         } else {

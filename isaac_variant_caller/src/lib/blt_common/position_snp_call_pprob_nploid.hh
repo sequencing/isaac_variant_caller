@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -31,7 +31,7 @@ struct nploid_genotype {
           pprob(ni.gtype_size()), ploidy(ni.ploidy()) {
         const unsigned n_gt(ni.gtype_size());
         static const double p(1./static_cast<double>(n_gt));
-        for(unsigned i(0); i<n_gt; ++i) pprob[i] = p;
+        for (unsigned i(0); i<n_gt; ++i) pprob[i] = p;
     }
 
     bool is_snp;

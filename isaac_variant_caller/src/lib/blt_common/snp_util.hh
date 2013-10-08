@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -31,10 +31,10 @@ is_spi_allref(const snp_pos_info& pi,
               const unsigned ref_gt) {
 
     const unsigned n_calls(pi.calls.size());
-    for(unsigned i(0); i<n_calls; ++i) {
+    for (unsigned i(0); i<n_calls; ++i) {
         const uint8_t obs_id(pi.calls[i].base_id);
         assert(obs_id!=BASE_ID::ANY);
-        if(ref_gt!=obs_id) return false;
+        if (ref_gt!=obs_id) return false;
     }
     return true;
 }

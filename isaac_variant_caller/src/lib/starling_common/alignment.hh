@@ -7,16 +7,14 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
-/// \file
 ///
 /// \author Chris Saunders
 ///
 
-#ifndef __ALIGNMENT_HH
-#define __ALIGNMENT_HH
+#pragma once
 
 
 #include "blt_util/blt_types.hh"
@@ -39,8 +37,7 @@ struct alignment {
     bool
     empty() const { return path.empty(); }
 
-    // is there an (internal) indel exceeding MAX_INDEL_SIZE or
-    // another reason this alignment can't be handled?
+    // is there an indel exceeding max_indel_size?
     bool
     is_overmax(const unsigned max_indel_size) const;
 
@@ -63,17 +60,17 @@ struct alignment {
 
     bool
     operator<(const alignment& rhs) const {
-        if(pos<rhs.pos) return true;
-        if(pos==rhs.pos) {
-            if(is_fwd_strand<rhs.is_fwd_strand) return true;
-            if(is_fwd_strand==rhs.is_fwd_strand) {
+        if (pos<rhs.pos) return true;
+        if (pos==rhs.pos) {
+            if (is_fwd_strand<rhs.is_fwd_strand) return true;
+            if (is_fwd_strand==rhs.is_fwd_strand) {
                 const unsigned ps(path.size());
                 const unsigned rps(rhs.path.size());
-                if(ps<rps) return true;
-                if(ps==rps) {
-                    for(unsigned i(0); i<ps; ++i) {
-                        if(path[i]<rhs.path[i]) return true;
-                        if(path[i]==rhs.path[i]) continue;
+                if (ps<rps) return true;
+                if (ps==rps) {
+                    for (unsigned i(0); i<ps; ++i) {
+                        if (path[i]<rhs.path[i]) return true;
+                        if (path[i]==rhs.path[i]) continue;
                         return false;
                     }
                 }
@@ -84,7 +81,7 @@ struct alignment {
 
     bool
     operator==(const alignment& rhs) const {
-        return ((pos==rhs.pos) and (path==rhs.path) and (is_fwd_strand==rhs.is_fwd_strand));
+        return ((pos==rhs.pos) && (path==rhs.path) && (is_fwd_strand==rhs.is_fwd_strand));
     }
 
     /////
@@ -95,6 +92,3 @@ struct alignment {
 
 
 std::ostream& operator<<(std::ostream& os,const alignment& al);
-
-
-#endif

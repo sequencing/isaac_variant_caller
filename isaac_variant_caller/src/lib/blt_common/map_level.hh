@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -33,7 +33,7 @@ enum index_t {
 inline
 const char*
 get_label(const index_t i) {
-    switch(i) {
+    switch (i) {
     case UNKNOWN: return "unknown";
     case UNKNOWN_MAPPED: return "unknown-mapped";
     case TIER1_MAPPED: return "tier1-mapped";

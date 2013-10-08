@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -52,7 +52,7 @@ struct diploid_genotype {
             static const int qp(error_prob_to_qphred((1.-p)));
             snp_qphred=qp;
             max_gt_qphred=qp;
-            for(unsigned i(0); i<DIGT::SIZE; ++i) {
+            for (unsigned i(0); i<DIGT::SIZE; ++i) {
                 pprob[i] = p;
             }
         }

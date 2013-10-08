@@ -7,19 +7,18 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
-/// \file
-
+///
 /// \author Chris Saunders
 ///
-#ifndef __BAM_RECORD_HH
-#define __BAM_RECORD_HH
+
+#pragma once
+
 
 #include "blt_util/bam_util.hh"
 #include "blt_util/bam_seq.hh"
-//#include "blt_util/read_record.hh"
 
 
 struct bam_record {
@@ -29,7 +28,7 @@ struct bam_record {
 
     ~bam_record() {
         if (NULL != _bp) {
-            if(NULL != _bp->data) free(_bp->data);
+            if (NULL != _bp->data) free(_bp->data);
             free(_bp);
         }
     }
@@ -66,6 +65,7 @@ public:
     bool is_first() const { return ((_bp->core.flag & BAM_FLAG::FIRST_READ) != 0); }
     bool is_second() const { return ((_bp->core.flag & BAM_FLAG::SECOND_READ) != 0); }
     bool is_secondary() const { return ((_bp->core.flag & BAM_FLAG::SECONDARY) != 0); }
+    bool is_supplement() const { return ((_bp->core.flag & BAM_FLAG::SUPPLEMENT) != 0); }
 
     void toggle_is_paired() { _bp->core.flag ^= BAM_FLAG::PAIRED; }
     void toggle_is_unmapped() { _bp->core.flag ^= BAM_FLAG::UNMAPPED; }
@@ -112,13 +112,13 @@ public:
     //
     bool
     is_unanchored() const {
-        if(! is_paired()) return false;
+        if (! is_paired()) return false;
         static const char amtag[] = {'A','M'};
         uint8_t* am_ptr(bam_aux_get(_bp,amtag));
-        if(NULL == am_ptr)  return false;
+        if (NULL == am_ptr)  return false;
         static const char smtag[] = {'S','M'};
         uint8_t* sm_ptr(bam_aux_get(_bp,smtag));
-        if(NULL == sm_ptr)  return false;
+        if (NULL == sm_ptr)  return false;
         return (is_int_code(am_ptr[0]) &&
                 is_int_code(sm_ptr[0]) &&
                 (0 == bam_aux2i(am_ptr)) &&
@@ -138,7 +138,7 @@ public:
 
     void
     set_target_id(int32_t tid) {
-        if(tid<-1) tid=-1;
+        if (tid<-1) tid=-1;
         _bp->core.tid=tid;
     }
 
@@ -165,7 +165,7 @@ private:
     static
     bool
     is_int_code(char c) {
-        switch(c) {
+        switch (c) {
         case 'c' :
         case 's' :
         case 'i' :
@@ -178,6 +178,3 @@ private:
 
     bam1_t* _bp;
 };
-
-
-#endif

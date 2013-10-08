@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -28,7 +28,7 @@ open_ifstream(std::ifstream& ifs,
               const char* filename) {
 
     ifs.open(filename);
-    if(! ifs) {
+    if (! ifs) {
         log_os << "ERROR: Can't open file: " << filename << "\n";
         exit(EXIT_FAILURE);
     }

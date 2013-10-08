@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /**
@@ -37,7 +37,7 @@
 
 #include "common/Exceptions.hh"
 
-namespace casava
+namespace illumina
 {
 namespace common
 {
@@ -99,5 +99,5 @@ PostConditionException::PostConditionException(const std::string& message)
 {
 }
 
-} // namespace common
-} // namespace casava
+}
+}

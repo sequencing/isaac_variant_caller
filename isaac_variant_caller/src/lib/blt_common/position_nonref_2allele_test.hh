@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -36,7 +36,7 @@ enum index_t {
 inline
 const char*
 label(const index_t i) {
-    switch(i) {
+    switch (i) {
     case REF: return "ref";
     case NONREF_MF: return "nonref";
     case NONREF_MF_NOISE: return "noise";

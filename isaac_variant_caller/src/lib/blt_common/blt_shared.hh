@@ -7,11 +7,10 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
-/// \file
-
+///
 /// \author Chris Saunders
 ///
 #pragma once
@@ -26,10 +25,6 @@
 extern const char STDIN_FILENAME[];
 
 extern const unsigned MAX_FLANK_SIZE;
-
-enum { BLT_MAX_READ_SIZE = 250 };
-
-enum { MAX_READ_REF_DELETION_SIZE = 150 };
 
 
 namespace LOG_LEVEL {
@@ -49,7 +44,7 @@ struct gvcf_options {
         , is_min_gqx(true)
         , min_gqx(30.)
         , is_max_base_filt(true)
-        , max_base_filt(.3)
+        , max_base_filt(.3)  // DPFratio
         , is_max_snv_sb(true)
         , max_snv_sb(10)
         , is_max_snv_hpol(true)
@@ -180,6 +175,8 @@ struct blt_options {
           , is_max_input_depth(false)
           , max_input_depth(0)
           , is_compute_hapscore(false)
+          , is_compute_VQSRmetrics(false)
+          // , do_codon_phasing(false)
     {}
 
     virtual ~blt_options() {}
@@ -330,6 +327,7 @@ struct blt_options {
     unsigned max_input_depth;
 
     bool is_compute_hapscore;
+    bool is_compute_VQSRmetrics;
 
     std::string report_filename;
 
@@ -374,6 +372,7 @@ struct blt_read_counts {
           duplicate(0),
           unmapped(0),
           secondary(0),
+          supplement(0),
           unanchored(0),
           large_ref_deletion(0),
           align_score_filter(0),
@@ -389,6 +388,7 @@ struct blt_read_counts {
     unsigned duplicate;
     unsigned unmapped;
     unsigned secondary;
+    unsigned supplement;
     unsigned unanchored;
     unsigned large_ref_deletion;
     unsigned align_score_filter;

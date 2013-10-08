@@ -7,7 +7,7 @@
 //
 // You should have received a copy of the Illumina Open Source
 // Software License 1 along with this program. If not, see
-// <https://github.com/downloads/sequencing/licenses/>.
+// <https://github.com/sequencing/licenses/>
 //
 
 /// \file
@@ -30,5 +30,18 @@ enum index_t {
     CONTIG,
     CONTIG_READ
 };
+
+inline
+const char*
+label(const index_t i) {
+    switch (i) {
+    case GENOME_TIER1_READ : return "genome_tier1";
+    case GENOME_TIER2_READ : return "genome_tier2";
+    case GENOME_SUBMAP_READ : return "genome_submap";
+    case CONTIG : return "contig";
+    case CONTIG_READ : return "contig_read";
+    default: return "unknown";
+    }
+}
 }
 
