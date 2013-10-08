@@ -1,3 +1,5 @@
+v1.0.6
+- Fix script permission bits in v1.0.5
 v1.0.5
 - Update starling to v2.0.13, adding support for very large and complex indels
 provided directly into input alignments by newer versions of Isaac

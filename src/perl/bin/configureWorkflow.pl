@@ -309,7 +309,7 @@ if(! $config->{user}{isSkipDepthFilters}) {
     my $configDir = File::Spec->catdir($outDir,'config');
     checkMakeDir($configDir);
     $config->{derived}{depthFile} = File::Spec->catdir($configDir,'chrom.depth.txt');
-    my $cmd = "$depthScript --bam $inputBam >| " . $config->{derived}{depthFile};
+    my $cmd = "perl $depthScript --bam $inputBam >| " . $config->{derived}{depthFile};
     executeCmd($cmd,0);
  
     logX("Estimating chromosome depth complete");
@@ -420,7 +420,7 @@ endef
 # top level results target:
 #
 $(finish_task):
-	$(finish_script) --config=$(config_file) && touch $@
+	perl $(finish_script) --config=$(config_file) && touch $@
 
 
 # chromosome targets:
@@ -442,7 +442,7 @@ print $MAKEFH <<ENDE;
 chrom_${chrom}_bin_${bin}_task := \$(call get_bin_task,$chrom,$bin)
 \$(finish_task): \$(chrom_${chrom}_bin_${bin}_task)
 \$(chrom_${chrom}_bin_${bin}_task):
-	\$(call_script) --config=\$(config_file) --chrom=$chrom --bin=$bin $extraArg&& touch \$@
+	perl \$(call_script) --config=\$(config_file) --chrom=$chrom --bin=$bin $extraArg&& touch \$@
 
 ENDE
 
