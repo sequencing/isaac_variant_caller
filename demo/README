@@ -1,20 +1,18 @@
 
 This directory contains a very small dateset which can be used to
-demonstrate/verify strelka's configuration and run steps using a
-demonstration script. To run the demonstration script from this
-directory, enter:
+demonstrate/verify IsaacVariantCaller's configuration and run steps
+using a demonstration script. To run the demonstration script from
+this directory, enter:
 
 "bash ./run_demo.bash"
 
 This script will also check that the final vcfs produced match the
 expected result.
 
-This demonstation compares seqeunces from two normal (non-cancer)
-samples -- using NA12892 as the "example normal" and NA12891 as the
-"example tumor". For each sample the included bam files contain
-sequences for only a small segment of chr20. The region has no
-intended significance apart from providing several simulated somatic
-snv and indel calls.
+This demonstation evaluates a portion of NA12892. For this sample
+the BAM file contains sequences for only a small segment of chr20.
+The region evaluated in the demo has no intended significance apart
+from providing several snv and indel calls.
 
 Note that this example uses the default BWA configuration file, except
 that 'isSkipDepthFilters' has to be set to 1. The depth filter
