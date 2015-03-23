@@ -81,12 +81,8 @@ $(SHARED_CXX_LIB) :
 install: build
 	cp $(STARKA_PROGRAMS) $(BIN_DIR)
 
-test: build cppcheck.done
+test: build
 	$(MAKE) -C lib $@
-
-cppcheck.done: $(STARKA_PROGRAMS)
-	@echo "Running cppcheck" && \
-	$(CURDIR)/run_cppcheck.bash
 
 $(STARKA_PROGRAMS): LDLIBS += -lboost_program_options
 $(STARKA_PROGRAMS): CC := $(CXX) # this fixes the linker to inlcude libc++
