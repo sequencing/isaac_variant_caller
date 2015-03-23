@@ -1,5 +1,5 @@
 
-Isaac Variant Caller -- 1.0.6
+Isaac Variant Caller -- 1.0.7
 ---------------
 
 Christopher Saunders (csaunders@illumina.com)
@@ -9,7 +9,7 @@ Isaac Variant Caller (IVC) is an analysis package designed to detect
 SNVs and small indels from the aligned sequencing reads of a single
 diploid sample.
 
-For additional documentation, please see:
+For additional information, please see:
 
 https://github.com/sequencing
 
@@ -158,9 +158,11 @@ WORK_DIR=/data/myWork
 cd $WORK_DIR
 
 # Step 2. Copy configuration ini file from default template set to a local copy,
-#         possibly edit settings in local copy of file:
+#         possibly edit settings in local copy of file. In this example the
+#         default configuration for whole genome sequencing is used. A
+#         second default configuration exists for exome/targeted sequencing.
 #
-cp $IVC_INSTALL_DIR/etc/ivc_config_default.ini config.ini
+cp $IVC_INSTALL_DIR/etc/ivc_config_default_wgs.ini config.ini
 
 # Step 3. Configure:
 #
@@ -171,4 +173,16 @@ $IVC_INSTALL_DIR/bin/configureWorkflow.pl --bam=/data/input.bam --ref=/data/refe
 #
 cd ./myAnalysis
 make -j 8
+
+
+CONFIGURATION DETAILS:
+
+IVC includes a second default configuration file for exome/targeted sequencing -- the
+only difference to WGS calling is that IVC's high depth filters are turned off for this
+case. IVC high depth filtration is designed to remove pericentromeric reference
+compression artifacts in WGS runs, but is not applicable for targeted sequencing. 
+
+To use the exome/targeted configuration replace step 2 above with:
+
+cp $IVC_INSTALL_DIR/etc/ivc_config_default_wes.ini config.ini
 
