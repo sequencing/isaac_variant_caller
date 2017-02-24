@@ -1,9 +1,21 @@
 
-Isaac Variant Caller -- 1.0.7
----------------
+# Please Note: Transition to Strelka2
+
+There is no support or ongoing development for the Isaac Variant Caller package,
+please instead see our ongoing updates to germline-calling in Strelka2, featuring **substantially
+improved accuracy**, **GPLv3 source licensing**, **multi-sample support** and more:
+
+https://github.com/Illumina/strelka
+
+<br>
+
+----
+
+<br>
+
+## Isaac Variant Caller -- 1.0.7
 
 Christopher Saunders (csaunders@illumina.com)
-
 
 Isaac Variant Caller (IVC) is an analysis package designed to detect
 SNVs and small indels from the aligned sequencing reads of a single
@@ -14,7 +26,7 @@ For additional information, please see:
 https://github.com/sequencing
 
 
-WORKFLOW SUMMARY:
+### WORKFLOW SUMMARY:
 
 The workflow requires aligned sequencing reads in the BAM file
 format. These reads must be sorted and indexed. PCR duplicate removal
@@ -34,15 +46,15 @@ recommended that only the passed variants (or a subset thereof) are
 used. One way these can be extracted from the output is with the
 'extract_variants' tool in the gvcftools package:
 
-"""
+```bash
 gzip -dc my_sample.genome.vcf.gz |\
 extract_variants |\
 awk '/^#/ || $7 == "PASS"' >\
 all_passed_variants.vcf
-"""
+```
 
 
-INSTALLATION:
+### INSTALLATION:
 
 The IVC workflow is designed to run on *nux-like platforms. It has
 been specifically tested on the following distributions:
@@ -88,27 +100,29 @@ distribution tarball. These included prerequisites are:
 The Makefile included in the IVC workflow tarball will compile both
 the included prerequisite packages and the variant caller itself.  To
 do this, go to the root of the isaac_variant_caller_workflow directory
-tree and run "./configure --prefix=$INSTALL_DIR" followed by make. 
+tree and run `./configure --prefix=$INSTALL_DIR` followed by make. 
 
 Example build:
-"""
+```bash
 tar -xzf isaac_variant_caller_workflow.tar.gz
 cd isaac_variant_caller_workflow
 ./configure --prefix=$INSTALLATION_DIR
 make
-"""
+```
 
 If the installation succeeds, all files will be installed to
-"$INSTALLATION_DIR"
+`$INSTALLATION_DIR`
 
 The final installation step is to run the workflow on the demostration
 data included in the distribution. Running the demo can be used to
 verify that the workflow completes and produces the expected
 answer. To do this, first complete the installation steps above. Then,
-given a IVC installation path of $IVC_INSTALL_DIR, execute the
+given a IVC installation path of `$IVC_INSTALL_DIR`, execute the
 following script:
 
+```
 $IVC_INSTALL_DIR/bin/demo/run_demo.bash
+```
 
 The demo will create a 'ivcDemoAnalysis' directory under the current
 working directory, then run an analysis for a very small genomic
@@ -116,16 +130,16 @@ region from a hapmap sample. It should complete in less than a minute.
 If the demo script succeeds, you should see the following lines as the
 final output:
 
-"""
+```
 **** No differences between expected and computed results.
 
 
 **** Demo/verification successfully completed
-"""
+```
 
 
 
-CONFIGURATION & ANALYSIS:
+### CONFIGURATION & ANALYSIS:
 
 An IVC run is accomplished in two steps: (1) configuration and (2)
 analysis.
@@ -144,7 +158,7 @@ Following configuration, the makefile can be used to run the analysis
 itself using make, qmake, or a similar tool.
 
 Example run:
-"""
+```bash
 # example location where strelka was installed:
 #
 IVC_INSTALL_DIR=/opt/isaac_variant_caller_workflow
@@ -173,9 +187,10 @@ $IVC_INSTALL_DIR/bin/configureWorkflow.pl --bam=/data/input.bam --ref=/data/refe
 #
 cd ./myAnalysis
 make -j 8
+```
 
 
-CONFIGURATION DETAILS:
+### CONFIGURATION DETAILS:
 
 IVC includes a second default configuration file for exome/targeted sequencing -- the
 only difference to WGS calling is that IVC's high depth filters are turned off for this
@@ -184,5 +199,6 @@ compression artifacts in WGS runs, but is not applicable for targeted sequencing
 
 To use the exome/targeted configuration replace step 2 above with:
 
+```
 cp $IVC_INSTALL_DIR/etc/ivc_config_default_wes.ini config.ini
-
+```
